@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // MASTER GOOGLE SCRIPT URL (Global Engine Scope)
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWKY7RpkJmkBLPX9S54MnNsZk1kuDvH2DDnR-2_aSdYaldoJhjF5DSEtYiOY7t-0XaLQ/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLm6192_3L19Jr1GVg96WIuvEBHgMUYFsIKbxrp4AB9HxydPaDfoStUrnQ64wpr-KdtA/exec";
 
     // ==========================================
     // PREMIUM CUSTOM ALERT FUNCTION
@@ -79,25 +79,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderLoginScreen() {
         appContainer.innerHTML = `
-            <div class="screen text-center">
-                <div class="logo-circle"></div>
-                <h1>Build Money</h1>
-                <p class="subtitle">Earn by writing. Grow with your team.</p>
+            <div class="screen text-center" style="display: flex; flex-direction: column; justify-content: center; min-height: 100vh; padding: 24px; overflow-y: auto;">
+                
+                <div class="login-header-premium" style="margin-bottom: 20px; margin-top: 15px;">
+                    <img src="./icon-512x512.png" alt="App Logo" class="premium-app-logo">
+                    <h1 class="premium-title">Build Money</h1>
+                    <p class="premium-subtitle">Your Ultimate Testing & Wallet Portal</p>
+                </div>
 
-                <form id="loginForm">
-                    <div class="input-group text-left">
-                        <label>Email</label>
-                        <input type="email" id="loginEmail" placeholder="you@example.com" required>
+                <!-- 🚀 IIT EXPERT FIX: Professional Trust Stats Grid -->
+                <div class="trust-stats-container">
+                    <div class="trust-stat-box">
+                        <span class="material-symbols-rounded stat-icon" style="color: #3b82f6; background: rgba(59, 130, 246, 0.1);">group</span>
+                        <h4>5K+</h4>
+                        <p>Trsuted Users</p>
                     </div>
-                    <div class="input-group text-left">
-                        <label>Password</label>
-                        <input type="password" id="loginPassword" placeholder="........" required>
+                    <div class="trust-stat-box">
+                        <span class="material-symbols-rounded stat-icon" style="color: #10b981; background: rgba(16, 185, 129, 0.1);">verified_user</span>
+                        <h4>100%</h4>
+                        <p>Secure</p>
                     </div>
-                    <button type="submit" class="btn-primary" id="loginBtn">Login</button>
+                    <div class="trust-stat-box">
+                        <span class="material-symbols-rounded stat-icon" style="color: #f59e0b; background: rgba(245, 158, 11, 0.1);">account_balance_wallet</span>
+                        <h4>24/7</h4>
+                        <p>Payouts</p>
+                    </div>
+                </div>
+
+                <form id="loginForm" class="premium-form">
+                    <div class="premium-input-wrapper">
+                        <span class="material-symbols-rounded input-icon">mail</span>
+                        <input type="email" id="loginEmail" placeholder="Email Address" required>
+                    </div>
+                    
+                    <div class="premium-input-wrapper">
+                        <span class="material-symbols-rounded input-icon">lock</span>
+                        <input type="password" id="loginPassword" placeholder="Password" required>
+                    </div>
+                    
+                    <div style="text-align: right; margin-bottom: 20px; width: 100%;">
+                        <a class="forgot-link-premium cursor-pointer" id="goToForgot">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-premium-login" id="loginBtn">
+                        SIGN IN <span class="material-symbols-rounded" style="font-size: 18px; margin-left: 6px;">arrow_forward</span>
+                    </button>
                 </form>
 
-                <a class="forgot-link text-green font-bold cursor-pointer" id="goToForgot">Forgot Password?</a>
-                <p class="bottom-link">New user? <span class="text-green font-bold cursor-pointer" id="goToRegister">Register</span></p>
+                <div class="register-prompt">
+                    <p>Don't have an account? <span class="register-link cursor-pointer" id="goToRegister">Create Now</span></p>
+                </div>
+
+                <!-- 🚀 IIT EXPERT FIX: Security Promise Footer -->
+                <div class="login-trust-footer">
+                    <p class="privacy-promise">
+                        <span class="material-symbols-rounded" style="font-size: 14px; margin-right: 4px;">verified_user</span> 
+                        End-to-End Encrypted & Secure
+                    </p>
+                </div>
+
             </div>
         `;
         
@@ -342,7 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="wallet-amount" id="walletAmountDisplay">₹0.00</div>
                     <div class="wallet-stats">
                         <span id="totalEarnedDisplay">Total Earned: ₹0.00</span>
-                        <span class="badge-inactive">Inactive</span>
+                        <!-- 🚀 IIT EXPERT FIX: Added dynamic ID for account status engine -->
+                        <span id="accountStatusBadge" class="badge-inactive" style="transition: all 0.3s ease;">Loading...</span>
                     </div>
                     <div class="wallet-actions">
                         <button class="action-btn" onclick="navigateTo('deposit')">
@@ -360,8 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- Daily Bonus Golden Card -->
                 <div class="bonus-card">
                     <div class="bonus-content">
-                        <h3>Daily Check-in Bonus</h3>
-                        <p>Claim Rs. 20 daily until your account is activate</p>
+                        <h3>Daily Bonus</h3>
+                        <p>Claim Rs. 20 daily</p>
                         <div class="claimed-days" id="totalClaimedDaysText">Total claimed: 0 days</div>
                     </div>
                     <button class="btn-golden" id="claimBonusBtn" disabled>Loading...</button>
@@ -375,8 +416,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="material-symbols-rounded" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #1b6e35; font-size: 20px;">arrow_forward_ios</span>
                 </div>
 
-                <div class="section-title">Recent Submissions</div>
-                <p class="empty-state">Koi submission nahi hai abhi.</p>
+                <div class="section-title" style="margin-top: 25px;">Recent Deposit Requests</div>
+                <!-- 🚀 IIT EXPERT FIX: Dynamic History Container -->
+                <div id="userDepositHistoryList" style="padding-bottom: 20px;">
+                    <p class="empty-state text-center" style="font-size: 13px; color: #9ca3af;">Loading secure history...</p>
+                </div>
             </div>
 
             <!-- Injecting Bottom Nav Dynamically -->
@@ -421,6 +465,76 @@ document.addEventListener('DOMContentLoaded', () => {
                 walletAmt.innerText = `₹${result.walletBalance}.00`; 
                 earnedAmt.innerText = `Total Earned: ₹${result.totalBonus}.00`;
 
+                // 🚀 IIT EXPERT FIX: Dynamic Verified Badge Engine
+                const statusBadge = document.getElementById('accountStatusBadge');
+                if (result.accountStatus === "Active") {
+                    statusBadge.className = "badge-verified"; // Class badal jayegi premium UI ke liye
+                    statusBadge.innerHTML = `<span class="material-symbols-rounded" style="font-size: 14px; margin-right: 3px;">verified</span> Verified`;
+                } else {
+                    statusBadge.className = "badge-inactive";
+                    statusBadge.innerHTML = `Inactive`;
+                }
+
+                // 🚀 IIT EXPERT FIX: Hide Daily Bonus Card forever if Account is Active
+                const bonusCardEl = document.querySelector('.bonus-card');
+                if (result.accountStatus === "Active") {
+                    if(bonusCardEl) bonusCardEl.style.display = 'none';
+                } else {
+                    if(bonusCardEl) bonusCardEl.style.display = 'block';
+                }
+
+                // 🚀 IIT EXPERT FIX: Render Premium Transaction & Daily Bonus History
+                const historyContainer = document.getElementById('userDepositHistoryList');
+                if (result.depositHistory && result.depositHistory.length > 0) {
+                    result.depositHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    
+                    historyContainer.innerHTML = result.depositHistory.map(item => {
+                        let badgeHtml = "";
+                        let titleText = `₹${item.amount} Deposit`;
+                        let iconHtml = `<span class="material-symbols-rounded" style="font-size: 14px;">event</span>`;
+
+                        if (item.status === "Bonus" || item.txnId === "DAILY_BONUS") {
+                            badgeHtml = `<span style="background: #e0e7ff; color: #3b82f6; padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15);"><span class="material-symbols-rounded" style="font-size: 14px;">redeem</span> CLAIMED</span>`;
+                            titleText = `₹${item.amount} Daily Bonus`;
+                        } else if (item.status === true || item.status === "true") {
+                            badgeHtml = `<span style="background: #dcfce7; color: #059669; padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 2px 6px rgba(5, 150, 105, 0.15);"><span class="material-symbols-rounded" style="font-size: 14px;">check_circle</span> APPROVED</span>`;
+                        } else {
+                            badgeHtml = `<span style="background: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.15);"><span class="material-symbols-rounded" style="font-size: 14px;">schedule</span> PENDING</span>`;
+                        }
+                        
+                        // 🚀 IIT EXPERT FIX: Smart Time Formatter (ISO to Human Readable IST)
+                        let displayDate = item.timestamp;
+                        try {
+                            const dateObj = new Date(item.timestamp);
+                            if (!isNaN(dateObj.getTime())) {
+                                displayDate = dateObj.toLocaleString('en-IN', {
+                                    day: '2-digit', month: 'short', year: 'numeric',
+                                    hour: '2-digit', minute: '2-digit', hour12: true
+                                });
+                            }
+                        } catch(e) {}
+                        
+                        return `
+                            <div style="background: #ffffff; border: 1.5px solid #f3f4f6; border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform 0.2s ease;">
+                                <div style="display: flex; flex-direction: column; gap: 5px;">
+                                    <span style="font-size: 15px; font-weight: 800; color: #111827;">${titleText}</span>
+                                    <span style="font-size: 11px; font-weight: 700; color: #6b7280; display: flex; align-items: center; gap: 4px;">
+                                        ${iconHtml} ${displayDate}
+                                    </span>
+                                </div>
+                                <div>
+                                    ${badgeHtml}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    historyContainer.innerHTML = `<div style="background: #f8fafc; border: 1.5px dashed #e2e8f0; border-radius: 14px; padding: 20px; text-align: center;">
+                        <span class="material-symbols-rounded" style="font-size: 32px; color: #94a3b8; margin-bottom: 8px;">receipt_long</span>
+                        <p style="font-size: 13px; font-weight: 600; color: #64748b; margin: 0;">No past transactions found.</p>
+                    </div>`;
+                }
+
                 // 🚀 IIT EXPERT FIX: Client-side time hata diya. Ab strictly backend 'serverToday' check karega.
                 if (result.lastClaimDate === result.serverToday) {
                     claimBtn.disabled = true; 
@@ -428,8 +542,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     claimBtn.style.background = "#e6cd9e";
                 } else {
                     claimBtn.disabled = false; 
-                    claimBtn.innerHTML = "Claim ₹20 Now";
-                    claimBtn.style.background = "#f0c375";
+                    claimBtn.innerHTML = "Claim ₹20";
+                    claimBtn.style.background = "#FA4605";
                 }
 
                 claimBtn.onclick = async () => {
@@ -443,21 +557,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                         let claimData = await claimRes.json();
 
-                        if (claimData.status === "success") {
-                            // UI Live Update (Instant wallet upgrade without reload)
-                            daysText.innerText = `Total claimed: ${claimData.totalDays} days`;
-                            walletAmt.innerText = `₹${claimData.totalBonus}.00`;
-                            earnedAmt.innerText = `Total Earned: ₹${claimData.totalBonus}.00`;
+                        if (claimData.status === "success" || claimData.status === "already_claimed") {
                             
+                            // 🚀 IIT EXPERT FIX: DRY Principle (Don't Repeat Yourself)
+                            // Button locking engine dono status ke liye ek hi baar run hoga
                             claimBtn.disabled = true;
-                            claimBtn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px; margin-right:4px;">check</span>Claimed for Today`;
+                            claimBtn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px; margin-right:4px;">check</span>Claimed`;
                             claimBtn.style.background = "#e6cd9e";
-                            showCustomAlert("Premium Unlock: ₹20 bonus successfully aapke wallet mein add ho gaya!");
-                        } else if (claimData.status === "already_claimed") {
-                            claimBtn.disabled = true;
-                            claimBtn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px; margin-right:4px;">check</span>Claimed for Today`;
-                            claimBtn.style.background = "#e6cd9e";
-                            showCustomAlert("Aap aaj ka bonus already claim kar chuke hain. Kal phir aaiye!");
+
+                            if (claimData.status === "success") {
+                                daysText.innerText = `Total claimed: ${claimData.totalDays} days`;
+                                walletAmt.innerText = `₹${claimData.walletBalance || claimData.totalBonus}.00`;
+                                earnedAmt.innerText = `Total Earned: ₹${claimData.totalBonus}.00`;
+                                showCustomAlert("Premium Unlock: ₹20 bonus successfully aapke wallet mein add ho gaya!");
+                                
+                                // 🚀 IIT EXPERT FIX: Instantly refresh the history list seamlessly
+                                syncUserProfileAndBonus(email); 
+                            } else {
+                                showCustomAlert("Aap aaj ka bonus already claim kar chuke hain. Kal phir aaiye!");
+                            }
+                            
                         } else {
                             throw new Error(claimData.message);
                         }
@@ -924,12 +1043,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 listContainer.innerHTML = reqData.map((req, index) => {
                     let planName = req.starterAmt > 0 ? "Starter" : (req.growthAmt > 0 ? "Growth" : "Premium");
                     let amt = req.starterAmt + req.growthAmt + req.premiumAmt;
+                    
+                    // 🚀 IIT EXPERT FIX: Smart Time Formatter for Admin Panel
+                    let displayDate = req.timestamp;
+                    try {
+                        const dateObj = new Date(req.timestamp);
+                        if (!isNaN(dateObj.getTime())) {
+                            displayDate = dateObj.toLocaleString('en-IN', {
+                                day: '2-digit', month: 'short', year: 'numeric',
+                                hour: '2-digit', minute: '2-digit', hour12: true
+                            });
+                        }
+                    } catch(e) {}
+
                     return `
                     <div class="request-list-card">
                         <div class="request-info">
                             <h4>${req.name}</h4>
                             <p>${req.email}</p>
-                            <small><span class="material-symbols-outlined icon-small">schedule</span> ${req.timestamp}</small>
+                            <small><span class="material-symbols-outlined icon-small">schedule</span> ${displayDate}</small>
                         </div>
                         <div style="text-align: right;">
                             <div style="font-weight: bold; color: #1b6e35; font-size: 14px;">₹${amt}</div>
@@ -1016,6 +1148,17 @@ document.addEventListener('DOMContentLoaded', () => {
             history.replaceState({ screen: 'login' }, '', '#login');
             renderLoginScreen();
         }
+
+        // 🚀 IIT EXPERT FIX: Kill the Native Splash Screen instantly after UI is painted
+        setTimeout(() => {
+            const splashScreen = document.getElementById('native-splash');
+            if (splashScreen) {
+                splashScreen.style.opacity = '0'; // Smooth fade out trigger
+                setTimeout(() => {
+                    splashScreen.style.display = 'none'; // Remove completely from DOM flow
+                }, 400); // 400ms CSS animation complete hone ka wait
+            }
+        }, 150); // 150ms buffer taaki browser HTML render kar le
     });
 
     // ==========================================
