@@ -1019,19 +1019,71 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-    // 4. REAL-TIME OFFLINE/ONLINE DETECTOR
+    // 4. PWA ENGINE: INSTALLER & OFFLINE DETECTOR
     // ==========================================
-    window.addEventListener('offline', () => {
-        showCustomAlert("You are offline. Please check your internet connection.");
-    });
-
-    window.addEventListener('online', () => {
-        showCustomAlert("Back online! Connection restored.");
-    });
-
-    // Pehli baar app khulte hi check karega
-    if (!navigator.onLine) {
-        showCustomAlert("You are currently offline. Some features may not work.");
+    
+    // 🚀 1. Register Master Service Worker (Compulsory for Installation)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                .then((reg) => console.log('IIT Expert PWA: Native Engine Activated!'))
+                .catch((err) => console.error('PWA Engine Failed:', err));
+        });
     }
+
+    // 🚀 2. Premium Smart Install Banner Logic
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); // Stop default browser mini-info bar
+        deferredPrompt = e;
+        showInstallBanner(); // Trigger our custom premium banner
+    });
+
+    function showInstallBanner() {
+        if (document.getElementById('pwa-install-banner')) return;
+
+        const banner = document.createElement('div');
+        banner.id = 'pwa-install-banner';
+        // Premium Floating Dark Banner UI
+        banner.innerHTML = `
+            <div style="position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); color: white; padding: 12px 18px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <img src="./icon-192x192.png" style="width: 36px; height: 36px; border-radius: 8px;">
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 14px; font-weight: 700;">Install BFAcademy</span>
+                        <span style="font-size: 11px; color: #cbd5e1;">For faster & native experience</span>
+                    </div>
+                </div>
+                <button id="pwaInstallBtn" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; transition: transform 0.1s;">INSTALL</button>
+            </div>
+        `;
+        document.body.appendChild(banner);
+
+        const installBtn = document.getElementById('pwaInstallBtn');
+        installBtn.addEventListener('mousedown', () => installBtn.style.transform = 'scale(0.95)');
+        
+        installBtn.addEventListener('click', async () => {
+            banner.remove(); // Remove banner instantly
+            if (deferredPrompt) {
+                deferredPrompt.prompt(); // Show native browser install prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User installed the app');
+                }
+                deferredPrompt = null;
+            }
+        });
+    }
+
+    // Success Listener
+    window.addEventListener('appinstalled', () => {
+        deferredPrompt = null;
+        showCustomAlert("Mubarak ho! App successfully install ho gaya hai. Ab bina browser ke premium native feel enjoy karein!");
+    });
+
+    // 🚀 3. Real-Time Offline/Online Monitor
+    window.addEventListener('offline', () => { showCustomAlert("You are offline. Please check your internet connection."); });
+    window.addEventListener('online', () => { showCustomAlert("Back online! Connection restored."); });
+    if (!navigator.onLine) { showCustomAlert("You are currently offline. Some features may not work."); }
 
 });
