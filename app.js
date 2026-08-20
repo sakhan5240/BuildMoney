@@ -22,6 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const appContainer = document.getElementById('app-container');
 
     // ==========================================
+    // MASTER GOOGLE SCRIPT URL (Global Engine Scope)
+    // ==========================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWKY7RpkJmkBLPX9S54MnNsZk1kuDvH2DDnR-2_aSdYaldoJhjF5DSEtYiOY7t-0XaLQ/exec";
+
+    // ==========================================
     // PREMIUM CUSTOM ALERT FUNCTION
     // ==========================================
     function showCustomAlert(message) {
@@ -52,8 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (screen === 'submit') renderSubmitScreen();
         else if (screen === 'team') renderTeamScreen();
         else if (screen === 'wallet') renderWalletScreen();
-        else if (screen === 'deposit') renderDepositScreen(); // Premium Feature Screen Add kiya
+        else if (screen === 'deposit') renderDepositScreen(); 
         else if (screen === 'support') renderSupportScreen();
+        else if (screen === 'adminLogin') renderAdminLoginScreen(); // 🚀 Advanced Admin Engine Route
+        else if (screen === 'adminDashboard') renderAdminDashboardScreen(); 
+        else if (screen === 'adminDepositRequests') renderAdminDepositRequestsScreen(); // 🚀 Admin Requests List
         else renderLoginScreen();
     };
 
@@ -166,9 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('regPassword').value;
             const inputReferral = document.getElementById('regReferral').value.trim(); // Trim extra spaces
             const btn = document.getElementById('regBtn');
-
-            // ⚠️ YAHAN APNI WEB APP KI URL PASTE KAREIN
-            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9Whohe4XFyQ5uPpBd37UJPfLvn04ri176Xonlf4CvT0NGDxkYgJWNl_f0vAIlxwLRtw/exec"; 
 
             if (GOOGLE_SCRIPT_URL === "AAPKI_GOOGLE_SCRIPT_WEB_APP_URL") {
                 showCustomAlert("IIT Expert Note: Pehle Google Script URL update karein app.js me!");
@@ -362,9 +367,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="btn-golden" id="claimBonusBtn" disabled>Loading...</button>
                 </div>
 
-                <div class="plan-card">
+                <!-- 🚀 IIT EXPERT FIX: Fully Clickable Premium Plan Card -->
+                <div class="plan-card cursor-pointer" onclick="navigateTo('deposit')" style="position: relative; transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
                     <h3>Choose a Plan</h3>
-                    <p>Deposit karke account activate karein aur pages submit karein.</p>
+                    <p style="padding-right: 30px;">Deposit karke account activate karein aur pages submit karein.</p>
+                    <!-- Native Arrow Icon for Navigation UI -->
+                    <span class="material-symbols-rounded" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #1b6e35; font-size: 20px;">arrow_forward_ios</span>
                 </div>
 
                 <div class="section-title">Recent Submissions</div>
@@ -391,8 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // LIVE GOOGLE SHEET SYNC ENGINE (100% Bulletproof & Loophole Free)
     // ==========================================
     async function syncUserProfileAndBonus(email) {
-        // ⚠️ IIT EXPERT NOTE: Make sure to paste your absolute NEWEST Google Script URL below after deployment
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9Whohe4XFyQ5uPpBd37UJPfLvn04ri176Xonlf4CvT0NGDxkYgJWNl_f0vAIlxwLRtw/exec"; 
         
         const claimBtn = document.getElementById('claimBonusBtn');
         const daysText = document.getElementById('totalClaimedDaysText');
@@ -410,7 +416,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.status === "success") {
                 userName.innerText = result.name;
                 daysText.innerText = `Total claimed: ${result.totalDays} days`;
-                walletAmt.innerText = `₹${result.totalBonus}.00`;
+                
+                // 🚀 IIT EXPERT SEPARATION: Wallet for Deposits, Earned for Bonus
+                walletAmt.innerText = `₹${result.walletBalance}.00`; 
                 earnedAmt.innerText = `Total Earned: ₹${result.totalBonus}.00`;
 
                 // 🚀 IIT EXPERT FIX: Client-side time hata diya. Ab strictly backend 'serverToday' check karega.
@@ -469,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
             userName.innerText = "Welcome back";
             // 🚀 IIT EXPERT FIX: Network fail hone par button Galti se ENABLE NAHI karna hai!
             claimBtn.disabled = true; 
-            claimBtn.innerHTML = "Sync Error - Refresh Page";
+            claimBtn.innerHTML = "Weak Netwrok";
             claimBtn.style.background = "#e6cd9e";
             console.error("Profile sync failed: ", error);
         }
@@ -509,11 +517,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderSupportScreen() {
-        appContainer.innerHTML = generateUpcomingScreen("Help & Support", "support_agent") + getBottomNavHTML('support');
+        appContainer.innerHTML = `
+            <div class="top-nav">
+                <div class="nav-title" style="flex-grow: 1; text-align: left; font-size: 20px;">Help & Support</div>
+                <!-- Premium Admin Engine Navigation Button -->
+                <button class="back-btn" id="goToAdminBtn" style="margin-right: 0; color: #1b6e35; transition: transform 0.2s;">
+                    <span class="material-symbols-rounded" style="font-size: 28px;">admin_panel_settings</span>
+                </button>
+            </div>
+            <div class="dashboard-layout" style="animation: fadeIn 0.3s ease-in-out;">
+                <div class="plan-card text-center" style="margin-top: 40px;">
+                    <span class="material-symbols-rounded text-green" style="font-size: 50px; margin-bottom: 15px;">support_agent</span>
+                    <h3>Support Feature</h3>
+                    <p>Bhai, yeh screen ka support chat jaldi hi connect hoga.</p>
+                </div>
+            </div>
+            ${getBottomNavHTML('support')}
+        `;
+
+        document.getElementById('goToAdminBtn').addEventListener('click', () => {
+            // Icon pe click karte hi shrink effect and redirect
+            document.getElementById('goToAdminBtn').style.transform = 'scale(0.8)';
+            setTimeout(() => navigateTo('adminLogin'), 150);
+        });
     }
 
+
     // ==========================================
-    // PREMIUM DEPOSIT & ACTIVATE SCREEN
+    // PREMIUM DEPOSIT & ACTIVATE SCREEN (With Drive Engine)
     // ==========================================
     function renderDepositScreen() {
         appContainer.innerHTML = `
@@ -522,15 +553,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="material-symbols-outlined">arrow_back</span>
                 </button>
                 <div class="nav-title text-center" style="font-size: 20px;">Deposit & Activate</div>
-                <div style="width: 24px;"></div> <!-- Spacer for center alignment -->
+                <div style="width: 24px;"></div>
             </div>
             
             <div class="screen" style="padding-bottom: 100px;">
                 <h3 class="section-title" style="margin-top: 0;">Select Plan</h3>
                 
-                <!-- Dynamic Plan Selector Engine -->
                 <div class="plan-list">
-                    <div class="plan-card-item" data-price="799">
+                    <!-- Added data-plan attribute for Backend DB Mapping -->
+                    <div class="plan-card-item active" data-price="799" data-plan="Starter">
                         <div class="plan-info">
                             <h4>Starter</h4>
                             <p class="text-green font-bold">₹100/page</p>
@@ -538,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="plan-price">₹799</div>
                     </div>
                     
-                    <div class="plan-card-item" data-price="1499">
+                    <div class="plan-card-item" data-price="1499" data-plan="Growth">
                         <div class="plan-info">
                             <h4>Growth</h4>
                             <p class="text-green font-bold">₹210/page</p>
@@ -546,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="plan-price">₹1499</div>
                     </div>
                     
-                    <div class="plan-card-item" data-price="3200">
+                    <div class="plan-card-item" data-price="3200" data-plan="Premium">
                         <div class="plan-info">
                             <h4>Premium</h4>
                             <p class="text-green font-bold">₹400/page</p>
@@ -555,18 +586,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
-                <!-- Live Payment Instructions Box -->
                 <div class="payment-instruction-box">
                     <h4 class="text-green font-bold" style="margin-bottom: 10px; font-size: 15px;">Payment Instructions</h4>
                     <p style="margin-bottom: 8px; font-size: 14px; font-weight: 500;">UPI ID: <strong style="color: #000;">8822778233@nyes</strong></p>
-                    <p style="margin-bottom: 12px; font-size: 14px; font-weight: 500;">Amount: <strong id="dynamicAmount" style="color: #000;">₹0</strong></p>
+                    <p style="margin-bottom: 12px; font-size: 14px; font-weight: 500;">Amount: <strong id="dynamicAmount" style="color: #000;">₹799</strong></p>
                     <p style="font-size: 13px; color: #1b6e35;">Kindly Upload your screenshot after payment.</p>
                 </div>
 
                 <h3 class="section-title">Payment Screenshot</h3>
                 
-                <!-- Dummy Image Picker -->
-                <label class="screenshot-upload-box" for="screenshotFile">
+                <!-- Live Image Preview Box -->
+                <label class="screenshot-upload-box" for="screenshotFile" id="imagePreviewBox">
                     <span class="material-symbols-outlined text-green" style="font-size: 36px; margin-bottom: 8px;" id="uploadIcon">image</span>
                     <p class="text-green font-bold" id="uploadText" style="font-size: 14px;">Tap to upload screenshot</p>
                     <input type="file" id="screenshotFile" accept="image/*" style="display: none;">
@@ -574,54 +604,404 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <h3 class="section-title">Transaction / UTR Ref (optional)</h3>
                 <div class="input-group">
-                    <input type="number" placeholder="Enter 12-digit UTR Number" style="background: #f4f6f5;">
+                    <input type="text" id="txnInput" placeholder="Enter 12-digit UTR Number" style="background: #f4f6f5;">
                 </div>
 
-                <button class="btn-primary" style="margin-top: 15px;">Submit Request</button>
+                <button class="btn-primary" id="depositSubmitBtn" style="margin-top: 15px;">Submit Request</button>
             </div>
             ${getBottomNavHTML('wallet')} 
         `;
 
-        // 1. Hardware-Sync Back Button Logic (100% Bulletproof)
         document.getElementById('goBackDeposit').addEventListener('click', () => {
-            // IIT Expert Logic: Agar app ki internal history exist karti hai toh native system back press trigger karo
-            if (window.history.length > 1) {
-                window.history.back(); // Yeh exactly phone ke hard backpress jaisa kaam karega
-            } else {
-                // Loophole Closure: Agar user direct link se aaya hai aur history nahi hai, toh gracefully dashboard par bhej do
-                navigateTo('dashboard', false); 
-            }
+            if (window.history.length > 1) { window.history.back(); } 
+            else { navigateTo('dashboard', false); }
         });
 
-        // 2. Dynamic Price Engine (Professional Plan Selection)
         const planCards = document.querySelectorAll('.plan-card-item');
         const amountDisplay = document.getElementById('dynamicAmount');
+        let selectedPlan = "Starter";
+        let selectedPrice = "799";
 
         planCards.forEach(card => {
             card.addEventListener('click', () => {
-                // Remove active class from all
                 planCards.forEach(c => c.classList.remove('active'));
-                // Add active to clicked one
                 card.classList.add('active');
-                // Update Amount dynamically
-                const price = card.getAttribute('data-price');
-                amountDisplay.innerText = `₹${price}`;
+                selectedPrice = card.getAttribute('data-price');
+                selectedPlan = card.getAttribute('data-plan');
+                amountDisplay.innerText = `₹${selectedPrice}`;
             });
         });
 
-        // 3. Pro Image Upload UX (Bina backend ke real feel dega abhi)
+        // 🚀 IIT EXPERT: Base64 Media Engine & Live Preview
         const fileInput = document.getElementById('screenshotFile');
+        const previewBox = document.getElementById('imagePreviewBox');
         const uploadText = document.getElementById('uploadText');
         const uploadIcon = document.getElementById('uploadIcon');
 
-        fileInput.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                uploadText.innerText = "Screenshot Selected! (Tap to change)";
-                uploadIcon.innerText = "check_circle"; // Green Tick mark
+        let base64String = null;
+        let mimeType = null;
+        let fileName = null;
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    base64String = event.target.result.split(',')[1];
+                    mimeType = file.type;
+                    fileName = file.name;
+                    
+                    // Set image as background for premium preview
+                    previewBox.style.backgroundImage = `url(${event.target.result})`;
+                    previewBox.style.backgroundSize = 'cover';
+                    previewBox.style.backgroundPosition = 'center';
+                    previewBox.style.borderStyle = 'solid'; // Remove dash border for clean image
+                    
+                    // Hide placeholder icons
+                    uploadText.style.display = 'none';
+                    uploadIcon.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 🚀 SUBMISSION LOGIC
+        const submitBtn = document.getElementById('depositSubmitBtn');
+        submitBtn.addEventListener('click', async () => {
+            if (!base64String) {
+                showCustomAlert("Kindly upload the payment screenshot first.");
+                return;
+            }
+
+            const txnVal = document.getElementById('txnInput').value.trim();
+            const user = firebase.auth().currentUser;
+
+            if(!user) {
+                showCustomAlert("Authentication Error! Please login again.");
+                return;
+            }
+
+            submitBtn.innerHTML = "Processing & Uploading...";
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = "0.7";
+
+            try {
+                let res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'depositRequest',
+                        email: user.email,
+                        planName: selectedPlan,
+                        price: selectedPrice,
+                        transactionId: txnVal,
+                        imageBase64: base64String,
+                        mimeType: mimeType,
+                        imageName: fileName
+                    })
+                });
+                let result = await res.json();
+
+                if (result.status === "success") {
+                    showCustomAlert("Deposit Request Submitted Successfully!");
+                    navigateTo('dashboard'); // Redirect auto on success
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (err) {
+                submitBtn.innerHTML = "Submit Request";
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = "1";
+                showCustomAlert("Upload Failed: " + err.message);
             }
         });
     }
 
+
+    // ==========================================
+    // NEUMORPHIC ADMIN LOGIN SCREEN
+    // ==========================================
+    function renderAdminLoginScreen() {
+        appContainer.innerHTML = `
+            <div class="neumorphic-wrapper">
+                <div class="top-nav" style="background: transparent; border: none; box-shadow: none; position: absolute; top: 0; width: 100%; z-index: 10;">
+                    <button class="back-btn" id="goBackAdmin" style="color: #6a737d;">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                </div>
+                
+                <div class="neumorphic-circle">
+                    <h2 class="admin-title">Login</h2>
+                    <p class="admin-subtitle">Admin Engine</p>
+
+                    <form id="adminLoginForm" class="admin-form">
+                        <div class="neumorphic-input-group">
+                            <span class="material-symbols-rounded icon-user">person</span>
+                            <input type="text" id="adminUser" placeholder="Username" required autocomplete="off">
+                        </div>
+                        <div class="neumorphic-input-group">
+                            <span class="material-symbols-rounded icon-lock">lock</span>
+                            <input type="password" id="adminPass" placeholder="Password" required>
+                        </div>
+                        <button type="submit" class="neumorphic-btn" id="adminLoginBtn">SIGN IN</button>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        // Loophole Free Back Navigation
+        document.getElementById('goBackAdmin').addEventListener('click', () => {
+            if (window.history.length > 1) { window.history.back(); } 
+            else { navigateTo('support', false); }
+        });
+
+        // 🚀 Admin Authentication Engine
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userVal = document.getElementById('adminUser').value.trim();
+            const passVal = document.getElementById('adminPass').value.trim();
+            const btn = document.getElementById('adminLoginBtn');
+
+            btn.innerText = "Signing In...";
+            btn.disabled = true;
+
+            try {
+                // 🚀 IIT EXPERT FIX: Added explicit text/plain header to strictly bypass browser CORS preflight blocks
+                let res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        action: 'adminLogin',
+                        username: userVal,
+                        password: passVal
+                    })
+                });
+                let result = await res.json();
+
+                if (result.status === "success") {
+                    showCustomAlert("Welcome Admin! Engine Unlocked.");
+                    // 🚀 IIT EXPERT FIX: Direct route to Admin Engine
+                    setTimeout(() => navigateTo('adminDashboard'), 1500); 
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch(error) {
+                btn.innerText = "SIGN IN";
+                btn.disabled = false;
+                showCustomAlert("Access Denied: " + error.message);
+            }
+        });
+    }
+
+
+
+
+    // ==========================================
+    // ADMIN MULTICOLOR GRID DASHBOARD
+    // ==========================================
+    function renderAdminDashboardScreen() {
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background-color: #0f172a; border-bottom: none;">
+                <button class="back-btn" id="adminLogoutBtn" style="color: #ffffff;">
+                    <span class="material-symbols-outlined">logout</span>
+                </button>
+                <div class="nav-title text-center" style="font-size: 20px; color: #ffffff;">Admin Engine</div>
+                <div style="width: 24px;"></div> <!-- Center Alignment Spacer -->
+            </div>
+            
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1.5rem;">
+                <div class="admin-header" style="margin-bottom: 25px;">
+                    <h2 style="font-size: 26px; color: #0f172a; margin-bottom: 4px;">Dashboard</h2>
+                    <p style="font-size: 14px; color: #64748b;">Overview & Platform Management</p>
+                </div>
+                
+                <div class="admin-grid">
+                    <!-- Deposit Request (Priority - Full Width) -->
+                    <div class="admin-card card-deposit" onclick="navigateTo('adminDepositRequests')">
+                        <span class="material-symbols-rounded">payments</span>
+                        <h4>Deposit Request</h4>
+                        <div class="glass-badge">Live</div>
+                    </div>  
+                    
+                    <!-- Withdraw Request -->
+                    <div class="admin-card card-withdraw" onclick="showCustomAlert('Withdraw Requests UI Connection Pending...')">
+                        <span class="material-symbols-rounded">account_balance</span>
+                        <h4>Withdraw Request</h4>
+                        <div class="glass-badge">0 New</div>
+                    </div>
+                    
+                    <!-- Queries -->
+                    <div class="admin-card card-queries" onclick="showCustomAlert('Queries UI Connection Pending...')">
+                        <span class="material-symbols-rounded">forum</span>
+                        <h4>Queries</h4>
+                    </div>
+                    
+                    <!-- New Submit -->
+                    <div class="admin-card card-submit" onclick="showCustomAlert('New Submissions UI Connection Pending...')">
+                        <span class="material-symbols-rounded">task</span>
+                        <h4>New Submit</h4>
+                    </div>
+                    
+                    <!-- New Accounts -->
+                    <div class="admin-card card-accounts" onclick="showCustomAlert('New Accounts UI Connection Pending...')">
+                        <span class="material-symbols-rounded">group_add</span>
+                        <h4>New Accounts</h4>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // 🚀 Loophole-Free Logout: Sends admin back to the user-side dashboard
+        document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+            navigateTo('dashboard', false); 
+        });
+    }
+
+
+    // ==========================================
+    // ADMIN DEPOSIT REQUESTS LIST SCREEN
+    // ==========================================
+    function renderAdminDepositRequestsScreen() {
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+                <button class="back-btn" id="goBackAdminDeposit">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <div class="nav-title" style="font-size: 18px; flex-grow: 1; text-align: left; font-weight: 800;">All Deposit Requests</div>
+                <div style="width: 24px;"></div>
+            </div>
+            
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1rem;">
+                <div id="loadingIndicator" class="text-center" style="color: #64748b; margin-top: 40px;">
+                    <span class="material-symbols-outlined" style="animation: spin 1s linear infinite; font-size: 36px; color: #3b82f6;">refresh</span>
+                    <p style="margin-top: 10px; font-weight: 500;">Fetching secure requests...</p>
+                </div>
+                
+                <div id="depositRequestsList" style="display: flex; flex-direction: column; gap: 12px; padding-bottom: 30px;">
+                    <!-- Dynamic List Engine Will Populate Here -->
+                </div>
+            </div>
+        `;
+
+        // 1. Hardware Backpress Sync (100% Loophole Free)
+        document.getElementById('goBackAdminDeposit').addEventListener('click', () => {
+            if (window.history.length > 1) { window.history.back(); } 
+            else { navigateTo('adminDashboard', false); }
+        });
+
+        // 2. Trigger Fetch Logic
+        fetchDepositRequests();
+    }
+
+
+    async function fetchDepositRequests() {
+        const listContainer = document.getElementById('depositRequestsList');
+        const loader = document.getElementById('loadingIndicator');
+
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: 'getDepositRequests' })
+            });
+            let result = await res.json();
+            loader.style.display = 'none';
+
+            if (result.status === "success") {
+                let reqData = result.data;
+                if (reqData.length === 0) {
+                    listContainer.innerHTML = `<p class="empty-state text-center" style="margin-top:20px;">No pending requests.</p>`;
+                    return;
+                }
+
+                // Strictly Latest to Oldest Sort
+                reqData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                // 🚀 Injecting Data globally so modal can access it
+                window.adminPendingRequests = reqData; 
+
+                listContainer.innerHTML = reqData.map((req, index) => {
+                    let planName = req.starterAmt > 0 ? "Starter" : (req.growthAmt > 0 ? "Growth" : "Premium");
+                    let amt = req.starterAmt + req.growthAmt + req.premiumAmt;
+                    return `
+                    <div class="request-list-card">
+                        <div class="request-info">
+                            <h4>${req.name}</h4>
+                            <p>${req.email}</p>
+                            <small><span class="material-symbols-outlined icon-small">schedule</span> ${req.timestamp}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: bold; color: #1b6e35; font-size: 14px;">₹${amt}</div>
+                            <button class="btn-view-details" onclick="openAdminApprovalModal(${index})">View</button>
+                        </div>
+                    </div>
+                `}).join('');
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            loader.innerHTML = `<p style="color: #e11d48;">Error: ${error.message}</p><button class="btn-view-details" onclick="fetchDepositRequests()">Retry</button>`;
+        }
+    }
+
+    // 🚀 Admin Approval Engine
+    window.openAdminApprovalModal = function(index) {
+        const req = window.adminPendingRequests[index];
+        const amt = req.starterAmt + req.growthAmt + req.premiumAmt;
+        const planName = req.starterAmt > 0 ? "Starter" : (req.growthAmt > 0 ? "Growth" : "Premium");
+        
+        const modalHtml = `
+            <div id="adminModalOverlay" class="custom-alert-overlay" style="display: flex;">
+                <div class="custom-alert-box" style="width: 90%; max-width: 400px; text-align: left; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Verification</h3>
+                    <p><strong>Name:</strong> ${req.name}</p>
+                    <p><strong>Email:</strong> ${req.email}</p>
+                    <p><strong>Plan:</strong> ${planName} (₹${amt})</p>
+                    <p style="margin-bottom: 10px;"><strong>Txn ID:</strong> ${req.txnId}</p>
+                    
+                    <a href="${req.screenshot}" target="_blank" style="display: block; background: #f0f0f0; text-align: center; padding: 10px; border-radius: 8px; margin-bottom: 20px; color: #2563eb; font-weight: bold; text-decoration: none;">
+                        <span class="material-symbols-outlined" style="vertical-align: middle;">open_in_new</span> View Screenshot
+                    </a>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="closeAdminModal()" style="flex: 1; padding: 12px; border: none; background: #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: bold;">Cancel</button>
+                        <button id="verifyApproveBtn" onclick="approveDepositReq(${req.rowNumber}, '${req.email}')" style="flex: 1; padding: 12px; border: none; background: #1b6e35; color: white; border-radius: 8px; cursor: pointer; font-weight: bold;">Verify & Add</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    };
+
+    window.closeAdminModal = function() {
+        const modal = document.getElementById('adminModalOverlay');
+        if(modal) modal.remove();
+    };
+
+    window.approveDepositReq = async function(rowNumber, email) {
+        const btn = document.getElementById('verifyApproveBtn');
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: 'verifyDeposit', rowNumber: rowNumber, email: email })
+            });
+            let result = await res.json();
+            if (result.status === "success") {
+                showCustomAlert("Success! Plan activated and balance added.");
+                closeAdminModal();
+                fetchDepositRequests(); // Auto refresh list
+            } else throw new Error(result.message);
+        } catch(e) {
+            btn.innerText = "Verify & Add";
+            btn.disabled = false;
+            showCustomAlert("Error: " + e.message);
+        }
+    };
     // ==========================================
     // 3. MASTER AUTH STATE LISTENER (Security Check)
     // ==========================================
