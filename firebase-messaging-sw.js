@@ -1,7 +1,7 @@
 // ==========================================
 // 1. OFFLINE CACHING ENGINE (No Internet Dinosaur Fix)
 // ==========================================
-const CACHE_NAME = 'academy-offline-cache-v2';
+const CACHE_NAME = 'academy-offline-cache-v3';
 const urlsToCache = [
     './',
     './index.html',
