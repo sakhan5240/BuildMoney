@@ -1,7 +1,7 @@
 // ==========================================
 // 1. OFFLINE CACHING ENGINE (No Internet Dinosaur Fix)
 // ==========================================
-const CACHE_NAME = 'academy-offline-cache-v4';
+const CACHE_NAME = 'buildmoney-offline-cache-v5';
 const urlsToCache = [
     './',
     './index.html',
@@ -33,12 +33,30 @@ self.addEventListener('activate', event => {
     event.waitUntil(self.clients.claim());
 });
 
-// Fetch Event: Agar Internet ON hai to server se lo, OFF hai to Cache se UI dikhao
-self.addEventListener('fetch', event => {
+// 🚀 IIT EXPERT FIX: True WebAPK Interceptor Engine
+self.addEventListener('fetch', (event) => {
+    // Sirf HTML page navigation ko intercept karega taaki native app instantly load ho
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            caches.match('./index.html').then((cachedResponse) => {
+                // Agar file cache mein hai, toh INSTANTLY load karo (0 network delay)
+                if (cachedResponse) {
+                    // Background silent update
+                    fetch(event.request).then((networkResponse) => {
+                        caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', networkResponse));
+                    }).catch(() => {}); 
+                    return cachedResponse;
+                }
+                return fetch(event.request);
+            })
+        );
+        return;
+    }
+
+    // Default Cache Strategy for CSS/JS/Images
     event.respondWith(
-        fetch(event.request).catch(() => {
-            // Agar internet nahi hai, toh cache me saved files return karo
-            return caches.match(event.request);
+        caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || fetch(event.request);
         })
     );
 });
