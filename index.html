@@ -25,6 +25,13 @@
 
 </head>
 <body>
+    <div id="native-splash" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.4s ease-out;">
+        <img src="./icon-512x512.png" alt="App Logo" style="width: 110px; height: 110px; border-radius: 28px; box-shadow: 0 12px 28px rgba(27, 110, 53, 0.25); margin-bottom: 24px;">
+        <div style="width: 36px; height: 36px; border: 4px solid #e5e7eb; border-top: 4px solid #1b6e35; border-radius: 50%; animation: splashSpin 1s linear infinite;"></div>
+        <style>
+            @keyframes splashSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
+    </div>
     <div id="app-container">
         <!-- Content will dynamically load here -->
     </div>
