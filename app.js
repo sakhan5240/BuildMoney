@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         appContainer.innerHTML = `
             <div class="screen text-center">
                 <div class="logo-circle"></div>
-                <h1>Bright Future Academy</h1>
+                <h1>Build Money</h1>
                 <p class="subtitle">Earn by writing. Grow with your team.</p>
 
                 <form id="loginForm">
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         appContainer.innerHTML = `
             <div class="screen">
                 <h1 class="text-left">Create Account</h1>
-                <p class="subtitle text-left">Join Bright Future Academy</p>
+                <p class="subtitle text-left">Join Build Money</p>
 
                 <form id="registerForm">
                     <div class="input-group text-left">
@@ -424,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 🚀 IIT EXPERT FIX: Client-side time hata diya. Ab strictly backend 'serverToday' check karega.
                 if (result.lastClaimDate === result.serverToday) {
                     claimBtn.disabled = true; 
-                    claimBtn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px; margin-right:4px;">check</span>Already Claimed`;
+                    claimBtn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px; margin-right:4px;">check</span>Claimed`;
                     claimBtn.style.background = "#e6cd9e";
                 } else {
                     claimBtn.disabled = false; 
@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <img src="./icon-192x192.png" style="width: 36px; height: 36px; border-radius: 8px;">
                     <div style="display: flex; flex-direction: column;">
-                        <span style="font-size: 14px; font-weight: 700;">Install BFAcademy</span>
+                        <span style="font-size: 14px; font-weight: 700;">Install Build Money</span>
                         <span style="font-size: 11px; color: #cbd5e1;">For faster & native experience</span>
                     </div>
                 </div>
@@ -1078,7 +1078,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Success Listener
     window.addEventListener('appinstalled', () => {
         deferredPrompt = null;
-        showCustomAlert("Mubarak ho! App successfully install ho gaya hai. Ab bina browser ke premium native feel enjoy karein!");
+        showCustomAlert("Congratulations! App is successfully installed.");
     });
 
     // 🚀 3. Real-Time Offline/Online Monitor
