@@ -34,9 +34,13 @@ body {
     color: #1a1a1a;
     display: flex;
     justify-content: center;
-    /* Hide scrollbar for Firefox/Edge */
     -ms-overflow-style: none;  
     scrollbar-width: none;  
+}
+
+/* 🚀 IIT EXPERT FIX: Force Bottom System Bar to be Pure White on Mobile Phones */
+@media (max-width: 480px) {
+    body { background-color: #ffffff; } 
 }
 
 #app-container {
@@ -410,8 +414,9 @@ h2 { font-size: 24px; margin-bottom: 10px; color: #1a1a1a; }
     max-width: 480px; 
     background: #ffffff;
     display: flex;
-    justify-content: space-around; /* Capsule tabs ke beech perfect spacing */
-    padding: 12px 10px 20px 10px; 
+    justify-content: space-around;
+    /* 🚀 IIT EXPERT FIX: Dynamic padding protects buttons from overlapping with System Navigation Bar */
+    padding: 12px 10px calc(20px + env(safe-area-inset-bottom)) 10px; 
     box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
     z-index: 1000;
     border-top-left-radius: 20px;
