@@ -87,13 +87,159 @@ h1 { font-size: 26px; margin-bottom: 8px; color: #000; }
 h2 { font-size: 24px; margin-bottom: 10px; color: #1a1a1a; }
 .subtitle { font-size: 14px; color: #7a7a7a; margin-bottom: 30px; }
 
-/* Logo */
-.logo-circle {
-    width: 80px;
-    height: 80px;
-    background-color: #1b6e35;
-    border-radius: 50%;
-    margin: 0 auto 20px auto;
+/* ==========================================
+   PREMIUM NATIVE LOGIN SCREEN UI
+   ========================================== */
+.login-header-premium {
+    margin-bottom: 35px;
+    text-align: center;
+    animation: fadeInDown 0.4s ease-out;
+}
+
+/* Authentic Android/iOS App Icon Shadow & Radius */
+.premium-app-logo {
+    width: 96px;
+    height: 96px;
+    border-radius: 24px; 
+    object-fit: cover;
+    box-shadow: 0 12px 28px rgba(27, 110, 53, 0.28); 
+    margin-bottom: 18px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.premium-app-logo:active {
+    transform: scale(0.92);
+}
+
+.premium-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+}
+
+.premium-subtitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.premium-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+/* Modern Input Boxes with Inner Icons */
+.premium-input-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.premium-input-wrapper .input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 22px;
+    transition: color 0.2s ease;
+}
+
+.premium-input-wrapper input {
+    width: 100%;
+    padding: 16px 16px 16px 48px;
+    background-color: #f3f4f6;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.premium-input-wrapper input::placeholder {
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+/* Dynamic Focus Highlight */
+.premium-input-wrapper input:focus {
+    background-color: #ffffff;
+    border-color: #1b6e35;
+    box-shadow: 0 4px 15px rgba(27, 110, 53, 0.1);
+}
+
+.premium-input-wrapper input:focus ~ .input-icon {
+    color: #1b6e35;
+}
+
+.forgot-link-premium {
+    font-size: 13px;
+    font-weight: 750;
+    color: #1b6e35;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.forgot-link-premium:active { opacity: 0.7; }
+
+/* 3D Action Button */
+.btn-premium-login {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #1b6e35 0%, #124d1a 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(27, 110, 53, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-premium-login:active {
+    transform: scale(0.96);
+    box-shadow: 0 4px 10px rgba(27, 110, 53, 0.2);
+}
+
+.register-prompt {
+    margin-top: 35px;
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 600;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.register-link {
+    color: #1b6e35;
+    font-weight: 800;
+    margin-left: 4px;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.register-link:active { opacity: 0.7; border-color: #1b6e35; }
+
+/* Hardware Accelerated Animations */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Forms */
@@ -790,4 +936,134 @@ h2 { font-size: 24px; margin-bottom: 10px; color: #1a1a1a; }
 /* Seamless Loader Animation */
 @keyframes spin {
     100% { transform: rotate(360deg); }
+}
+
+
+/* ==========================================
+   LOGIN SCREEN TRUST & SECURITY UI
+   ========================================== */
+.trust-stats-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 25px;
+    width: 100%;
+    animation: fadeInDown 0.5s ease-out;
+}
+
+.trust-stat-box {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #f3f4f6;
+    border-radius: 16px;
+    padding: 12px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    transition: transform 0.2s ease;
+}
+
+.trust-stat-box:active {
+    transform: scale(0.95);
+}
+
+.trust-stat-box .stat-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.trust-stat-box h4 {
+    font-size: 14px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.3px;
+}
+
+.trust-stat-box p {
+    font-size: 9px;
+    font-weight: 800;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+/* Security Footer */
+.login-trust-footer {
+    margin-top: auto; /* Pushes footer to the bottom */
+    padding-top: 25px;
+    text-align: center;
+    width: 100%;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.privacy-promise {
+    color: #10b981;
+    font-size: 11px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 6px 14px;
+    border-radius: 20px;
+}
+
+/* 🚀 IIT EXPERT FIX: Smart Auto-Hide Engine on Keyboard Open */
+@media (max-height: 600px) {
+    .trust-stats-container, .login-trust-footer {
+        display: none !important; /* Hides stats & footer so inputs are perfectly visible while typing */
+    }
+    .login-header-premium {
+        margin-bottom: 15px !important;
+        margin-top: 0 !important;
+    }
+}
+
+
+
+/* ==========================================
+   DYNAMIC ACCOUNT STATUS BADGES UI
+   ========================================== */
+.badge-inactive {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    border: 1px solid #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Premium Verified Blue Tick Badge */
+.badge-verified {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #2563eb;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    border: 1px solid #bfdbfe;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+    animation: popInVerified 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popInVerified {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
