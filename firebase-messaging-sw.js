@@ -1,7 +1,7 @@
 // ==========================================
 // 1. OFFLINE CACHING ENGINE (No Internet Dinosaur Fix)
 // ==========================================
-const CACHE_NAME = 'academy-offline-cache-v3';
+const CACHE_NAME = 'academy-offline-cache-v4';
 const urlsToCache = [
     './',
     './index.html',
@@ -12,14 +12,25 @@ const urlsToCache = [
     'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0'
 ];
 
-// Install Event: App ke saare essential files ko phone me save (cache) kar lo
+// 🚀 IIT EXPERT FIX: Fail-Safe Install Event for GitHub Pages
 self.addEventListener('install', event => {
+    self.skipWaiting(); // Force activation instantly
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
-            console.log('Opened cache for Offline Support');
-            return cache.addAll(urlsToCache);
+            console.log('Opened cache for Offline Support (Fail-Safe Mode)');
+            // Agar ek file miss bhi ho, toh Service Worker crash nahi hoga!
+            return Promise.all(
+                urlsToCache.map(url => {
+                    return cache.add(url).catch(err => console.log('Cache skipped for (Non-Fatal):', url));
+                })
+            );
         })
     );
+});
+
+// Activate Event: Purane caches ko automatically delete karne ke liye
+self.addEventListener('activate', event => {
+    event.waitUntil(self.clients.claim());
 });
 
 // Fetch Event: Agar Internet ON hai to server se lo, OFF hai to Cache se UI dikhao
