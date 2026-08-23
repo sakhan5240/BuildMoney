@@ -6,27 +6,34 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     -webkit-tap-highlight-color: transparent; 
     
-    /* Native App Feature: Text Selection Off */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    /* 🚀 IIT EXPERT FIX: Forced Selection Block */
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important; /* Mobile Popup Killer */
     
-    /* Zoom-in/Zoom-out permanently disabled */
     touch-action: pan-y; 
 }
 
 /* Let user type in input boxes only */
 input, textarea {
-    -webkit-user-select: auto;
-    -moz-user-select: auto;
-    -ms-user-select: auto;
-    user-select: auto;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
 }
 
 /* Native App Feature: Permanently Hide Scrollbar */
 ::-webkit-scrollbar {
     display: none;
+}
+
+/* 🚀 IIT EXPERT FIX: Permanent block on elastic rubber-band scrolling */
+html, body {
+    overscroll-behavior: none; 
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
 }
 
 body {
@@ -37,7 +44,6 @@ body {
     -ms-overflow-style: none;  
     scrollbar-width: none;  
 }
-
 /* 🚀 IIT EXPERT FIX: Force Bottom System Bar to be Pure White on Mobile Phones */
 @media (max-width: 480px) {
     body { background-color: #ffffff; } 
@@ -561,12 +567,15 @@ h2 { font-size: 24px; margin-bottom: 10px; color: #1a1a1a; }
     background: #ffffff;
     display: flex;
     justify-content: space-around;
-    /* 🚀 IIT EXPERT FIX: Dynamic padding protects buttons from overlapping with System Navigation Bar */
     padding: 12px 10px calc(20px + env(safe-area-inset-bottom)) 10px; 
     box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
     z-index: 1000;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
+    
+    /* 🚀 IIT EXPERT FIX: Touch Drag Lock (Robotic Effect Killer) */
+    touch-action: none; /* Prevents any page drag/swipe originating from the navbar */
+    -webkit-user-drag: none; /* Strict enforcement for Safari & WebKit */
 }
 
 .nav-item {
