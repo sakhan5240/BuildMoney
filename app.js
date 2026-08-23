@@ -1,4 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // ==========================================
+    // 🛡️ IIT EXPERT FIX: ANTI-INSPECT & RIGHT-CLICK SECURITY ENGINE
+    // ==========================================
+    
+    // 1. Right Click (Context Menu) Disabled
+    document.addEventListener('contextmenu', (event) => {
+        event.preventDefault(); // Default menu block
+    });
+
+    // 2. Keyboard Hacker Shortcuts Block (F12, DevTools, View Source)
+    document.addEventListener('keydown', (event) => {
+        // Block F12
+        if (event.key === 'F12' || event.keyCode === 123) {
+            event.preventDefault();
+        }
+        // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (Developer Tools)
+        if (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'i' || event.key === 'J' || event.key === 'j' || event.key === 'C' || event.key === 'c')) {
+            event.preventDefault();
+        }
+        // Block Ctrl+U (View Source)
+        if (event.ctrlKey && (event.key === 'U' || event.key === 'u')) {
+            event.preventDefault();
+        }
+    });
     
     // ==========================================
     // 0. FIREBASE INITIALIZATION
@@ -24,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // MASTER GOOGLE SCRIPT URL (Global Engine Scope)
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLm6192_3L19Jr1GVg96WIuvEBHgMUYFsIKbxrp4AB9HxydPaDfoStUrnQ64wpr-KdtA/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCgN9YrpdWBleIr7m3ZHkZgwFpMrcuaNT9REonie0m0WQwQHPi0I8Mwp09-efKU5jnyw/exec";
 
     // ==========================================
     // PREMIUM CUSTOM ALERT FUNCTION
@@ -678,37 +703,17 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="screen" style="padding-bottom: 100px;">
                 <h3 class="section-title" style="margin-top: 0;">Select Plan</h3>
                 
-                <div class="plan-list">
-                    <!-- Added data-plan attribute for Backend DB Mapping -->
-                    <div class="plan-card-item active" data-price="799" data-plan="Starter">
-                        <div class="plan-info">
-                            <h4>Starter</h4>
-                            <p class="text-green font-bold">₹100/page</p>
-                        </div>
-                        <div class="plan-price">₹799</div>
-                    </div>
-                    
-                    <div class="plan-card-item" data-price="1499" data-plan="Growth">
-                        <div class="plan-info">
-                            <h4>Growth</h4>
-                            <p class="text-green font-bold">₹210/page</p>
-                        </div>
-                        <div class="plan-price">₹1499</div>
-                    </div>
-                    
-                    <div class="plan-card-item" data-price="3200" data-plan="Premium">
-                        <div class="plan-info">
-                            <h4>Premium</h4>
-                            <p class="text-green font-bold">₹400/page</p>
-                        </div>
-                        <div class="plan-price">₹3200</div>
+                <div id="dynamic-plan-list" class="plan-list">
+                    <div class="text-center" style="padding: 20px; color: #1b6e35;">
+                        <span class="material-symbols-outlined" style="animation: spin 1s linear infinite; font-size: 32px;">sync</span>
+                        <p style="margin-top: 8px; font-weight: bold; font-size: 14px;">Loading Live Plans...</p>
                     </div>
                 </div>
 
                 <div class="payment-instruction-box">
                     <h4 class="text-green font-bold" style="margin-bottom: 10px; font-size: 15px;">Payment Instructions</h4>
-                    <p style="margin-bottom: 8px; font-size: 14px; font-weight: 500;">UPI ID: <strong style="color: #000;">8822778233@nyes</strong></p>
-                    <p style="margin-bottom: 12px; font-size: 14px; font-weight: 500;">Amount: <strong id="dynamicAmount" style="color: #000;">₹799</strong></p>
+                    <p style="margin-bottom: 8px; font-size: 14px; font-weight: 500;">UPI ID: <strong id="dynamicUpiDisplay" style="color: #1b6e35; font-size: 16px;">Loading...</strong></p>
+                    <p style="margin-bottom: 12px; font-size: 14px; font-weight: 500;">Amount: <strong id="dynamicAmount" style="color: #000;">Loading...</strong></p>
                     <p style="font-size: 13px; color: #1b6e35;">Kindly Upload your screenshot after payment.</p>
                 </div>
 
@@ -736,20 +741,102 @@ document.addEventListener('DOMContentLoaded', () => {
             else { navigateTo('dashboard', false); }
         });
 
-        const planCards = document.querySelectorAll('.plan-card-item');
+        let selectedPlan = "";
+        let selectedPrice = 0;
         const amountDisplay = document.getElementById('dynamicAmount');
-        let selectedPlan = "Starter";
-        let selectedPrice = "799";
+        const planListContainer = document.getElementById('dynamic-plan-list');
 
-        planCards.forEach(card => {
-            card.addEventListener('click', () => {
-                planCards.forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                selectedPrice = card.getAttribute('data-price');
-                selectedPlan = card.getAttribute('data-plan');
-                amountDisplay.innerText = `₹${selectedPrice}`;
-            });
-        });
+        
+
+
+        // 🚀 IIT EXPERT FIX: Advanced Safe JSON Engine & Null Failsafe
+        async function fetchPlansFromServer() {
+            try {
+                let res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: 'getAllPlans' })
+                });
+                
+                // 1. Fetch response as plain text first to prevent JSON crash
+                let textRes = await res.text();
+                let result;
+                try {
+                    result = JSON.parse(textRes);
+                } catch(err) {
+                    throw new Error("Backend Update Required: Did you deploy App Script as a 'New Version'?");
+                }
+                
+                // 2. Safe DOM Injection
+                if (result.status === "success" && result.data && result.data.length > 0) {
+                    let plansHtml = "";
+                    result.data.forEach((plan, index) => {
+                        let isActive = index === 0 ? "active" : "";
+                        if(index === 0) {
+                            selectedPlan = plan.name;
+                            selectedPrice = plan.price;
+                            if(amountDisplay) amountDisplay.innerText = `₹${plan.price}`; // Null Safe
+                        }
+                        plansHtml += `
+                        <div class="plan-card-item ${isActive}" data-price="${plan.price}" data-plan="${plan.name}">
+                            <div class="plan-info">
+                                <h4>${plan.name}</h4>
+                                <p class="text-green font-bold">Profit: ₹${plan.profit}/Quiz</sp>
+                            </div>
+                            <div class="plan-price">₹${plan.price}</div>
+                        </div>`;
+                    });
+                    
+                    if(planListContainer) planListContainer.innerHTML = plansHtml;
+
+                    const planCards = document.querySelectorAll('.plan-card-item');
+                    planCards.forEach(card => {
+                        card.addEventListener('click', () => {
+                            planCards.forEach(c => c.classList.remove('active'));
+                            card.classList.add('active');
+                            selectedPrice = card.getAttribute('data-price');
+                            selectedPlan = card.getAttribute('data-plan');
+                            if(amountDisplay) amountDisplay.innerText = `₹${selectedPrice}`;
+                        });
+                    });
+                } else {
+                    if(planListContainer) planListContainer.innerHTML = `<p class="text-center" style="color:#e11d48; font-size: 13px; padding: 10px;">Error: ${result.message || 'Check Server Database.'}</p>`;
+                }
+            } catch(e) {
+                // 3. Ultimate Diagnostic Error Display
+                if(planListContainer) {
+                    planListContainer.innerHTML = `
+                    <div class="text-center" style="background:#fef2f2; color:#b91c1c; padding:18px; border:1.5px dashed #ef4444; border-radius:12px;">
+                        <span class="material-symbols-outlined" style="font-size:32px; margin-bottom:8px;">error</span>
+                        <p style="font-size: 14px; font-weight: 800; margin-bottom:4px;">Engine Disconnected</p>
+                        <p style="font-size: 12px; font-weight: 500;">${e.message}</p>
+                    </div>`;
+                }
+            }
+        }
+
+        // 🚀 IIT EXPERT FIX: Live UPI Fetch Engine
+        async function fetchLiveUpi() {
+            try {
+                let res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: 'getUpiId' })
+                });
+                let textRes = await res.text();
+                let result = JSON.parse(textRes);
+                if (result.status === "success") {
+                    document.getElementById('dynamicUpiDisplay').innerText = result.upiId;
+                } else {
+                    document.getElementById('dynamicUpiDisplay').innerText = "Unavailable";
+                }
+            } catch(e) {
+                document.getElementById('dynamicUpiDisplay').innerText = "Network Error";
+            }
+        }
+        
+        fetchPlansFromServer(); 
+        fetchLiveUpi(); // Trigger UPI Fetch
 
         // 🚀 IIT EXPERT: Base64 Media Engine & Live Preview
         const fileInput = document.getElementById('screenshotFile');
@@ -900,7 +987,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (result.status === "success") {
                     showCustomAlert("Welcome Admin! Engine Unlocked.");
-                    // 🚀 IIT EXPERT FIX: Direct route to Admin Engine
+                    // 🚀 IIT EXPERT FIX: Save Secure Session Token Client-Side
+                    sessionStorage.setItem('buildMoneyAdminToken', result.adminToken);
                     setTimeout(() => navigateTo('adminDashboard'), 1500); 
                 } else {
                     throw new Error(result.message);
@@ -935,12 +1023,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p style="font-size: 14px; color: #64748b;">Overview & Platform Management</p>
                 </div>
                 
+                <!-- 🚀 IIT EXPERT FIX: Premium Live UPI Management Card -->
+                <div style="background: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Current Live UPI ID</p>
+                        <h3 id="adminCurrentUpi" style="font-size: 16px; font-weight: 800; color: #1b6e35; margin: 0;">Loading...</h3>
+                    </div>
+                    <button onclick="openUpiUpdateModal()" style="background: #eff6ff; color: #2563eb; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; transition: transform 0.15s ease, background 0.15s ease;" onmousedown="this.style.transform='scale(0.92)'" onmouseup="this.style.transform='scale(1)'">
+                        Change
+                    </button>
+                </div>
+                
                 <div class="admin-grid">
                     <!-- Deposit Request (Priority - Full Width) -->
                     <div class="admin-card card-deposit" onclick="navigateTo('adminDepositRequests')">
                         <span class="material-symbols-rounded">payments</span>
                         <h4>Deposit Request</h4>
                         <div class="glass-badge">Live</div>
+                    </div>
+
+                    <!-- Total Accounts Activated -->
+                    <div class="admin-card card-submit" style="cursor: default;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <span class="material-symbols-rounded">verified_user</span>
+                            <h2 id="liveActiveCount" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1; color: white;">-</h2>
+                        </div>
+                        <h4 style="margin-top: 15px;">Active Accounts</h4>
+                    </div>
+                    
+                    <!-- Total New Users -->
+                    <div class="admin-card card-accounts" style="cursor: default;">
+                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <span class="material-symbols-rounded">group_add</span>
+                            <h2 id="liveUsersCount" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1; color: white;">-</h2>
+                        </div>
+                        <h4 style="margin-top: 15px;">Total Users</h4>
                     </div>  
                     
                     <!-- Withdraw Request -->
@@ -955,18 +1072,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="material-symbols-rounded">forum</span>
                         <h4>Queries</h4>
                     </div>
-                    
-                    <!-- New Submit -->
-                    <div class="admin-card card-submit" onclick="showCustomAlert('New Submissions UI Connection Pending...')">
-                        <span class="material-symbols-rounded">task</span>
-                        <h4>New Submit</h4>
-                    </div>
-                    
-                    <!-- New Accounts -->
-                    <div class="admin-card card-accounts" onclick="showCustomAlert('New Accounts UI Connection Pending...')">
-                        <span class="material-symbols-rounded">group_add</span>
-                        <h4>New Accounts</h4>
-                    </div>
                 </div>
             </div>
         `;
@@ -975,8 +1080,153 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('adminLogoutBtn').addEventListener('click', () => {
             navigateTo('dashboard', false); 
         });
+
+        // 🚀 IIT EXPERT FIX: Trigger Live Stats fetch on load
+        fetchAdminDashboardStats();
+        fetchAdminLiveUpi(); // 🚀 NEW: Load UPI instantly on Admin Dashboard
     }
 
+    // ==========================================
+    // 🚀 ADMIN LIVE STATS ENGINE (With Number Animation)
+    // ==========================================
+    async function fetchAdminDashboardStats() {
+        const usersCountEl = document.getElementById('liveUsersCount');
+        const activeCountEl = document.getElementById('liveActiveCount');
+        if(!usersCountEl || !activeCountEl) return;
+
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ 
+                    action: 'getAdminStats',
+                    adminToken: sessionStorage.getItem('buildMoneyAdminToken') // Strict Token
+                })
+            });
+            
+            let textRes = await res.text();
+            let result;
+            try {
+                result = JSON.parse(textRes);
+            } catch(e) {
+                throw new Error("JSON Parse failed");
+            }
+            
+            if (result.status === "success") {
+                // Smooth Counting Animation for Premium Feel (Duration 1.2 seconds)
+                animateValue(usersCountEl, 0, result.totalUsers, 1200);
+                animateValue(activeCountEl, 0, result.activeAccounts, 1200);
+            } else {
+                usersCountEl.innerText = "Err";
+                activeCountEl.innerText = "Err";
+            }
+        } catch(e) {
+            usersCountEl.innerText = "--";
+            activeCountEl.innerText = "--";
+        }
+    }
+    
+    // 🚀 High-Performance Native CSS-Level Number Counter
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                obj.innerHTML = end; // Final safety check so number is perfectly exact
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // ==========================================
+    // 🚀 ADMIN UPI FETCH & UPDATE ENGINE
+    // ==========================================
+    
+    // 1. Fetch current UPI for Admin Card
+    async function fetchAdminLiveUpi() {
+        const upiEl = document.getElementById('adminCurrentUpi');
+        if(!upiEl) return; // Failsafe
+
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: 'getUpiId' }) 
+            });
+            let textRes = await res.text();
+            let result = JSON.parse(textRes);
+            if (result.status === "success") {
+                upiEl.innerText = result.upiId;
+            } else {
+                upiEl.innerText = "Error Fetching";
+            }
+        } catch(e) {
+            upiEl.innerText = "Network Error";
+        }
+    }
+
+    // 2. Open Premium Neumorphic Style Update Modal
+    window.openUpiUpdateModal = function() {
+        // Find current UPI to pre-fill the input box smoothly
+        let currentUpi = document.getElementById('adminCurrentUpi').innerText;
+        if(currentUpi === 'Loading...' || currentUpi === 'Error Fetching' || currentUpi === 'Network Error') currentUpi = '';
+
+        const modalHtml = `
+            <div id="upiModalOverlay" class="custom-alert-overlay" style="display: flex;">
+                <div class="custom-alert-box" style="width: 90%; max-width: 350px; text-align: left; padding: 24px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                        <span class="material-symbols-rounded" style="color: #2563eb; font-size: 24px; margin-right: 8px;">qr_code_scanner</span>
+                        <h3 style="color: #0f172a; font-size: 18px; margin: 0;">Update Live UPI ID</h3>
+                    </div>
+                    <p style="font-size: 13px; color: #64748b; margin-bottom: 15px; font-weight: 500;">Please enter the new UPI ID here</p>
+                    
+                    <input type="text" id="newUpiInput" value="${currentUpi}" placeholder="e.g. 9876543210@ybl" style="width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 10px; margin-bottom: 20px; font-weight: 700; color: #0f172a; outline: none; font-size: 15px; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'">
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="document.getElementById('upiModalOverlay').remove()" style="flex: 1; padding: 14px; border: none; background: #f1f5f9; color: #475569; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13px;">Cancel</button>
+                        <button id="saveUpiBtn" onclick="saveNewUpi()" style="flex: 1; padding: 14px; border: none; background: #2563eb; color: white; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13px; box-shadow: 0 4px 10px rgba(37,99,235,0.2);">Update Now</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    };
+
+    // 3. Save Logic Engine
+    window.saveNewUpi = async function() {
+        const upiVal = document.getElementById('newUpiInput').value.trim();
+        if (!upiVal) { showCustomAlert("Error: UPI ID blank nahi ho sakta!"); return; }
+        
+        const btn = document.getElementById('saveUpiBtn');
+        btn.innerText = "Updating...";
+        btn.disabled = true;
+
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ 
+                    action: 'updateUpiId', 
+                    newUpi: upiVal,
+                    adminToken: sessionStorage.getItem('buildMoneyAdminToken') // Strict Token Inject
+                })
+            });
+            let result = await res.json();
+            if (result.status === "success") {
+                document.getElementById('upiModalOverlay').remove();
+                showCustomAlert("UPI ID Live Updated Successfully!");
+                fetchAdminLiveUpi(); // Instantly refresh the UI card
+            } else throw new Error(result.message);
+        } catch(e) {
+            btn.innerText = "Update Now";
+            btn.disabled = false;
+            showCustomAlert("Error: " + e.message);
+        }
+    };
 
     // ==========================================
     // ADMIN DEPOSIT REQUESTS LIST SCREEN
@@ -1022,7 +1272,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let res = await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: 'getDepositRequests' })
+                body: JSON.stringify({ 
+                    action: 'getDepositRequests',
+                    // 🚀 IIT EXPERT FIX: Token injected for fetching lists
+                    adminToken: sessionStorage.getItem('buildMoneyAdminToken') 
+                })
             });
             let result = await res.json();
             loader.style.display = 'none';
@@ -1034,17 +1288,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // Strictly Latest to Oldest Sort
                 reqData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-                // 🚀 Injecting Data globally so modal can access it
                 window.adminPendingRequests = reqData; 
 
                 listContainer.innerHTML = reqData.map((req, index) => {
-                    let planName = req.starterAmt > 0 ? "Starter" : (req.growthAmt > 0 ? "Growth" : "Premium");
-                    let amt = req.starterAmt + req.growthAmt + req.premiumAmt;
+                    // 🚀 IIT EXPERT FIX: Universal variables strictly applied (Fixes ₹NaN & Wrong Plan)
+                    let planName = req.planName; 
+                    let amt = req.amount;
                     
-                    // 🚀 IIT EXPERT FIX: Smart Time Formatter for Admin Panel
                     let displayDate = req.timestamp;
                     try {
                         const dateObj = new Date(req.timestamp);
@@ -1077,11 +1328,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 🚀 Admin Approval Engine
+    // 🚀 Admin Approval Engine Modal
     window.openAdminApprovalModal = function(index) {
         const req = window.adminPendingRequests[index];
-        const amt = req.starterAmt + req.growthAmt + req.premiumAmt;
-        const planName = req.starterAmt > 0 ? "Starter" : (req.growthAmt > 0 ? "Growth" : "Premium");
+        
+        // 🚀 IIT EXPERT FIX: Universal variables strictly applied for Modal (Fixes ₹NaN)
+        const amt = req.amount;
+        const planName = req.planName;
         
         const modalHtml = `
             <div id="adminModalOverlay" class="custom-alert-overlay" style="display: flex;">
@@ -1120,7 +1373,13 @@ document.addEventListener('DOMContentLoaded', () => {
             let res = await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: 'verifyDeposit', rowNumber: rowNumber, email: email })
+                body: JSON.stringify({ 
+                    action: 'verifyDeposit', 
+                    rowNumber: rowNumber, 
+                    email: email,
+                    // 🚀 IIT EXPERT FIX: Token injected for Verify & Add
+                    adminToken: sessionStorage.getItem('buildMoneyAdminToken') 
+                })
             });
             let result = await res.json();
             if (result.status === "success") {
@@ -1134,6 +1393,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showCustomAlert("Error: " + e.message);
         }
     };
+
     // ==========================================
     // 3. MASTER AUTH STATE LISTENER (Security Check)
     // ==========================================
