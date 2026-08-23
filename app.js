@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // MASTER GOOGLE SCRIPT URL (Global Engine Scope)
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCgN9YrpdWBleIr7m3ZHkZgwFpMrcuaNT9REonie0m0WQwQHPi0I8Mwp09-efKU5jnyw/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuZTlyyZUlGnLpYRAn5NXST1xNiotBft0S56HPUSDBja1eqe85vy14FKzj08alKJXS3g/exec";
 
     // ==========================================
     // PREMIUM CUSTOM ALERT FUNCTION
@@ -82,11 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (screen === 'submit') renderSubmitScreen();
         else if (screen === 'team') renderTeamScreen();
         else if (screen === 'wallet') renderWalletScreen();
+        else if (screen === 'withdraw') renderWithdrawScreen(); // 🚀 Withdraw Portal Route
         else if (screen === 'deposit') renderDepositScreen(); 
         else if (screen === 'support') renderSupportScreen();
         else if (screen === 'adminLogin') renderAdminLoginScreen(); // 🚀 Advanced Admin Engine Route
         else if (screen === 'adminDashboard') renderAdminDashboardScreen(); 
-        else if (screen === 'adminDepositRequests') renderAdminDepositRequestsScreen(); // 🚀 Admin Requests List
+        else if (screen === 'adminDepositRequests') renderAdminDepositRequestsScreen(); 
+        else if (screen === 'adminWithdrawRequests') renderAdminWithdrawRequestsScreen(); // 🚀 Admin Withdraw List Route
         else renderLoginScreen();
     };
 
@@ -267,16 +269,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 // STEP 2: Create Account on Firebase
                 btn.innerHTML = "Creating Account...";
                 let userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                
+                // 🚀 IIT EXPERT FIX: Extract Secure Firebase UID
+                let secureUid = userCredential.user.uid;
 
                 // STEP 3: Push Data to Google Sheet (Generate New Code)
                 btn.innerHTML = "Saving Details...";
                 let saveResponse = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
+                    // 🚀 IIT EXPERT FIX: Added strict headers to bypass any browser CORS blocks
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({
                         action: 'registerUser',
                         name: name,
                         email: email,
-                        password: password
+                        uid: secureUid // 🚀 Exact UID matching the backend shield requirement
                     })
                 });
                 let saveData = await saveResponse.json();
@@ -403,8 +410,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="wallet-card">
-                    <div class="wallet-balance-label">Wallet Balance</div>
-                    <div class="wallet-amount" id="walletAmountDisplay">₹0.00</div>
+                    <!-- 🚀 IIT EXPERT FIX: Premium Privacy Eye Toggle Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <div class="wallet-balance-label" style="margin-bottom: 0;">Wallet Balance</div>
+                        <button id="toggleBalanceBtn" style="background: transparent; border: none; color: rgba(255,255,255,0.7); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;" onmousedown="this.style.transform='scale(0.85)'" onmouseup="this.style.transform='scale(1)'">
+                            <span class="material-symbols-rounded" id="balanceEyeIcon" style="font-size: 20px;">visibility_off</span>
+                        </button>
+                    </div>
+                    <!-- Default state hidden for privacy -->
+                    <div class="wallet-amount" id="walletAmountDisplay" data-balance="0">₹••••••</div>
                     <div class="wallet-stats">
                         <span id="totalEarnedDisplay">Total Earned: ₹0.00</span>
                         <!-- 🚀 IIT EXPERT FIX: Added dynamic ID for account status engine -->
@@ -414,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button class="action-btn" onclick="navigateTo('deposit')">
                             <span class="material-symbols-outlined">add_circle</span>Deposit
                         </button>
-                        <button class="action-btn" onclick="navigateTo('wallet')">
+                        <button class="action-btn" onclick="navigateTo('withdraw')">
                             <span class="material-symbols-outlined">arrow_upward</span>Withdraw
                         </button>
                         <button class="action-btn" onclick="navigateTo('submit')">
@@ -452,6 +466,29 @@ document.addEventListener('DOMContentLoaded', () => {
             ${getBottomNavHTML('dashboard')}
         `;
         
+        // 🚀 IIT EXPERT FIX: Privacy Toggle Engine Logic
+        const toggleBtn = document.getElementById('toggleBalanceBtn');
+        const eyeIcon = document.getElementById('balanceEyeIcon');
+        const walletAmtDisplay = document.getElementById('walletAmountDisplay');
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const realBalance = walletAmtDisplay.getAttribute('data-balance') || "0";
+                
+                if (eyeIcon.innerText === 'visibility_off') {
+                    // Show Balance
+                    eyeIcon.innerText = 'visibility';
+                    walletAmtDisplay.innerText = `₹${realBalance}.00`;
+                    eyeIcon.style.color = "#ffffff"; 
+                } else {
+                    // Hide Balance
+                    eyeIcon.innerText = 'visibility_off';
+                    walletAmtDisplay.innerText = `₹••••••`;
+                    eyeIcon.style.color = "rgba(255,255,255,0.7)"; 
+                }
+            });
+        }
+
         const user = auth.currentUser;
         if(user) {
             // App UI instantly dikhe, isliye background mein fetch call lagaya hai
@@ -487,7 +524,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 daysText.innerText = `Total claimed: ${result.totalDays} days`;
                 
                 // 🚀 IIT EXPERT SEPARATION: Wallet for Deposits, Earned for Bonus
-                walletAmt.innerText = `₹${result.walletBalance}.00`; 
+                walletAmt.setAttribute('data-balance', result.walletBalance);
+                
+                // Smart privacy check on live database sync
+                const eyeIcon = document.getElementById('balanceEyeIcon');
+                if (eyeIcon && eyeIcon.innerText === 'visibility') {
+                    walletAmt.innerText = `₹${result.walletBalance}.00`; 
+                } else {
+                    walletAmt.innerText = `₹••••••`; // Keep it hidden if eye is closed
+                }
+                
                 earnedAmt.innerText = `Total Earned: ₹${result.totalBonus}.00`;
 
                 // 🚀 IIT EXPERT FIX: Dynamic Verified Badge Engine
@@ -665,8 +711,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="top-nav">
                 <div class="nav-title" style="flex-grow: 1; text-align: left; font-size: 20px;">Help & Support</div>
                 <!-- Premium Admin Engine Navigation Button -->
-                <button class="back-btn" id="goToAdminBtn" style="margin-right: 0; color: #1b6e35; transition: transform 0.2s;">
-                    <span class="material-symbols-rounded" style="font-size: 28px;">admin_panel_settings</span>
+                <button class="back-btn" id="goToAdminBtn" style="margin-right: 0; color: white; transition: transform 0.2s; border: 1px solid blue; padding: 5px; border-radius: 10px; background: blue;">
+                    <span class="material-symbols-rounded">server_person</span>&nbsp; <span style="font-weight: bold;"> Admin Login</span>
                 </button>
             </div>
             <div class="dashboard-layout" style="animation: fadeIn 0.3s ease-in-out;">
@@ -923,6 +969,176 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+
+    // ==========================================
+    // 🚀 PREMIUM WITHDRAW REQUEST PORTAL
+    // ==========================================
+    function renderWithdrawScreen() {
+        appContainer.innerHTML = `
+            <div class="top-nav">
+                <button class="back-btn" id="goBackWithdraw">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <div class="nav-title text-center" style="font-size: 20px;">Withdraw Request Portal</div>
+                <div style="width: 24px;"></div>
+            </div>
+
+            <div class="screen" style="padding-bottom: 100px;">
+                
+                <!-- Premium Wallet Balance Card -->
+                <div style="background: linear-gradient(135deg, #1b6e35 0%, #124d1a 100%); border-radius: 16px; padding: 20px; color: white; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(27, 110, 53, 0.25);">
+                    <p style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Available Balance</p>
+                    <h2 id="withdrawWalletBalance" style="font-size: 32px; font-weight: 800; margin: 0; color: white;">Loading...</h2>
+                    <p id="realtimeDeductionHint" style="font-size: 12px; color: #c4eed0; margin-top: 8px; font-weight: 600; display: none; transition: all 0.3s ease;">Remaining Balance: ₹0.00</p>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 0;">Bank Details</h3>
+                
+                <form id="withdrawForm">
+                    <div class="input-group">
+                        <label>Withdraw Amount (₹)</label>
+                        <input type="number" id="withdrawAmt" placeholder="Enter Amount" required style="background: #f4f6f5; font-size: 18px; font-weight: bold; color: #1b6e35;">
+                    </div>
+                    <div class="input-group">
+                        <label>Bank Name</label>
+                        <input type="text" id="bankName" placeholder="e.g. State Bank of India" required style="background: #f4f6f5;">
+                    </div>
+                    <div class="input-group">
+                        <label>Account Number</label>
+                        <input type="number" id="accNumber" placeholder="Enter Account Number" required style="background: #f4f6f5;">
+                    </div>
+                    <div class="input-group">
+                        <label>Confirm Account Number</label>
+                        <input type="password" id="confirmAccNumber" placeholder="Re-enter Account Number" required style="background: #f4f6f5;">
+                    </div>
+                    <div class="input-group">
+                        <label>IFSC Code</label>
+                        <input type="text" id="ifscCode" placeholder="Enter IFSC Code" required style="background: #f4f6f5; text-transform: uppercase;">
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="withdrawSubmitBtn" style="margin-top: 15px; box-shadow: 0 4px 15px rgba(27, 110, 53, 0.3);">Submit Request</button>
+                </form>
+            </div>
+            ${getBottomNavHTML('wallet')} 
+        `;
+
+        document.getElementById('goBackWithdraw').addEventListener('click', () => {
+            if (window.history.length > 1) { window.history.back(); } 
+            else { navigateTo('dashboard', false); }
+        });
+
+        let currentBal = 0;
+        const balDisplay = document.getElementById('withdrawWalletBalance');
+        const amtInput = document.getElementById('withdrawAmt');
+        const hintDisplay = document.getElementById('realtimeDeductionHint');
+        const btn = document.getElementById('withdrawSubmitBtn');
+
+        // Fetch Live Secure Balance
+        const user = firebase.auth().currentUser;
+        if(user) {
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getUserProfile', email: user.email })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    currentBal = data.walletBalance;
+                    balDisplay.innerText = `₹${currentBal}.00`;
+                } else {
+                    balDisplay.innerText = "Error";
+                }
+            })
+            .catch(() => balDisplay.innerText = "Network Error");
+        }
+
+        // 🚀 Real-time Dynamic Math Engine
+        amtInput.addEventListener('input', (e) => {
+            let val = Number(e.target.value) || 0;
+            if (val > 0) {
+                hintDisplay.style.display = 'block';
+                if (val > currentBal) {
+                    hintDisplay.innerText = "Insufficient Balance!";
+                    hintDisplay.style.color = "#ff4d4d";
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                } else {
+                    hintDisplay.innerText = `Remaining after withdraw: ₹${(currentBal - val).toFixed(2)}`;
+                    hintDisplay.style.color = "#c4eed0";
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            } else {
+                hintDisplay.style.display = 'none';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        });
+
+        // 🚀 Submit Form Logic
+        document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if(!user) {
+                showCustomAlert("Authentication Error! Please login again.");
+                return;
+            }
+
+            const amt = Number(amtInput.value);
+            const bank = document.getElementById('bankName').value.trim();
+            const acc1 = document.getElementById('accNumber').value.trim();
+            const acc2 = document.getElementById('confirmAccNumber').value.trim();
+            const ifsc = document.getElementById('ifscCode').value.trim().toUpperCase();
+
+            // Client Side Double Check
+            if (amt <= 0 || amt > currentBal) {
+                showCustomAlert("Invalid Amount or Insufficient Wallet Balance!");
+                return;
+            }
+            if (acc1 !== acc2) {
+                showCustomAlert("Account Numbers do not match!");
+                return;
+            }
+
+            btn.innerText = "Processing Securely...";
+            btn.disabled = true;
+
+            try {
+                let res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: 'withdrawRequest',
+                        email: user.email, // Securely checks Auth Context
+                        amount: amt,
+                        bankName: bank,
+                        accNo: acc1,
+                        ifsc: ifsc
+                    })
+                });
+                let result = await res.json();
+
+                if (result.status === "success") {
+                    currentBal = result.newBalance; // Update local balance dynamically
+                    balDisplay.innerText = `₹${currentBal}.00`;
+                    hintDisplay.style.display = 'none';
+                    document.getElementById('withdrawForm').reset();
+                    
+                    showCustomAlert("Withdraw Request Submitted & Balance Deducted!");
+                    setTimeout(() => navigateTo('dashboard'), 2000); 
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (err) {
+                showCustomAlert("Transaction Failed: " + err.message);
+            } finally {
+                btn.innerText = "Submit Request";
+                btn.disabled = false;
+            }
+        });
+    }
+
+
     // ==========================================
     // NEUMORPHIC ADMIN LOGIN SCREEN
     // ==========================================
@@ -1060,11 +1276,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h4 style="margin-top: 15px;">Total Users</h4>
                     </div>  
                     
-                    <!-- Withdraw Request -->
-                    <div class="admin-card card-withdraw" onclick="showCustomAlert('Withdraw Requests UI Connection Pending...')">
+                    <!-- 🚀 IIT EXPERT FIX: Withdraw Request Navigation -->
+                    <div class="admin-card card-withdraw" onclick="navigateTo('adminWithdrawRequests')">
                         <span class="material-symbols-rounded">account_balance</span>
                         <h4>Withdraw Request</h4>
-                        <div class="glass-badge">0 New</div>
+                        <div class="glass-badge">Live</div>
                     </div>
                     
                     <!-- Queries -->
@@ -1393,6 +1609,230 @@ document.addEventListener('DOMContentLoaded', () => {
             showCustomAlert("Error: " + e.message);
         }
     };
+
+    // ==========================================
+    // 🚀 ADMIN WITHDRAW REQUESTS LIST (Dual-Tab Engine)
+    // ==========================================
+    function renderAdminWithdrawRequestsScreen() {
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+                <button class="back-btn" id="goBackAdminWithdraw">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <div class="nav-title" style="font-size: 18px; flex-grow: 1; text-align: left; font-weight: 800;">Withdraw Requests</div>
+                <div style="width: 24px;"></div>
+            </div>
+            
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1rem;">
+                
+                <!-- 🚀 Dual-Tab Segmented Controller -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; padding: 0 4px;">
+                    <button id="tabPendingW" onclick="switchWithdrawTab('Pending')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #f59e0b; color: white; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);">Pending</button>
+                    <button id="tabApprovedW" onclick="switchWithdrawTab('Approved')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #e2e8f0; color: #64748b; font-weight: 800; cursor: pointer; transition: 0.2s;">Approved</button>
+                </div>
+
+                <div id="withdrawLoadingIndicator" class="text-center" style="color: #64748b; margin-top: 40px;">
+                    <span class="material-symbols-outlined" style="animation: spin 1s linear infinite; font-size: 36px; color: #f59e0b;">refresh</span>
+                    <p style="margin-top: 10px; font-weight: 500;">Fetching secure requests...</p>
+                </div>
+                
+                <div id="withdrawRequestsList" style="display: flex; flex-direction: column; gap: 12px; padding-bottom: 30px;">
+                    <!-- Dynamic List Engine Will Populate Here -->
+                </div>
+            </div>
+        `;
+
+        document.getElementById('goBackAdminWithdraw').addEventListener('click', () => {
+            if (window.history.length > 1) { window.history.back(); } 
+            else { navigateTo('adminDashboard', false); }
+        });
+
+        window.currentWithdrawTab = 'Pending';
+        fetchAdminWithdraws();
+    }
+
+    // Tab Switching Logic
+    window.switchWithdrawTab = function(tab) {
+        window.currentWithdrawTab = tab;
+        document.getElementById('tabPendingW').style.background = tab === 'Pending' ? '#f59e0b' : '#e2e8f0';
+        document.getElementById('tabPendingW').style.color = tab === 'Pending' ? 'white' : '#64748b';
+        document.getElementById('tabPendingW').style.boxShadow = tab === 'Pending' ? '0 4px 10px rgba(245, 158, 11, 0.2)' : 'none';
+        
+        document.getElementById('tabApprovedW').style.background = tab === 'Approved' ? '#10b981' : '#e2e8f0';
+        document.getElementById('tabApprovedW').style.color = tab === 'Approved' ? 'white' : '#64748b';
+        document.getElementById('tabApprovedW').style.boxShadow = tab === 'Approved' ? '0 4px 10px rgba(16, 185, 129, 0.2)' : 'none';
+        
+        renderWithdrawList();
+    };
+
+    // Data Fetch API
+    async function fetchAdminWithdraws() {
+        const listContainer = document.getElementById('withdrawRequestsList');
+        const loader = document.getElementById('withdrawLoadingIndicator');
+
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ 
+                    action: 'getWithdrawRequests',
+                    adminToken: sessionStorage.getItem('buildMoneyAdminToken') 
+                })
+            });
+            let result = await res.json();
+            loader.style.display = 'none';
+
+            if (result.status === "success") {
+                let reqData = result.data;
+                // Chronological Sort: Newest First
+                reqData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                window.adminWithdrawData = reqData; 
+                renderWithdrawList();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            loader.innerHTML = `<p style="color: #e11d48;">Error: ${error.message}</p><button class="btn-view-details" onclick="fetchAdminWithdraws()">Retry</button>`;
+        }
+    }
+
+    // List Rendering Engine
+    window.renderWithdrawList = function() {
+        const listContainer = document.getElementById('withdrawRequestsList');
+        if(!window.adminWithdrawData) return;
+
+        const filteredData = window.adminWithdrawData.filter(req => req.status === window.currentWithdrawTab);
+
+        if (filteredData.length === 0) {
+            listContainer.innerHTML = `<p class="empty-state text-center" style="margin-top:20px;">No ${window.currentWithdrawTab.toLowerCase()} requests found.</p>`;
+            return;
+        }
+
+        listContainer.innerHTML = filteredData.map((req) => {
+            // Find global index for accurate modal mapping
+            const globalIndex = window.adminWithdrawData.findIndex(r => r.rowNumber === req.rowNumber);
+            
+            let displayDate = req.timestamp;
+            try {
+                const dateObj = new Date(req.timestamp);
+                if (!isNaN(dateObj.getTime())) {
+                    displayDate = dateObj.toLocaleString('en-IN', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit', hour12: true
+                    });
+                }
+            } catch(e) {}
+
+            // 🚀 IIT EXPERT UI FIX: Premium Pill-Shaped Badge Design
+            let badgeHtml = req.status === 'Approved' 
+                ? `<span style="background: #e6f4ea; color: #137333; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(19, 115, 51, 0.1);"><span class="material-symbols-rounded" style="font-size: 14px;">check_circle</span> APPROVED</span>`
+                : `<span style="background: #fff3e0; color: #e67c22; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(230, 124, 34, 0.1);"><span class="material-symbols-rounded" style="font-size: 14px;">schedule</span> PENDING</span>`;
+
+            // 🚀 IIT EXPERT UI FIX: Exact Screenshot Matched Premium Layout
+            return `
+            <div style="background: #ffffff; border-radius: 16px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <!-- Left Side: User & Bank Info -->
+                    <div style="display: flex; flex-direction: column;">
+                        <h4 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; letter-spacing: 0.2px;">${req.name}</h4>
+                        <p style="font-size: 13px; font-weight: 500; color: #64748b; margin: 0 0 6px 0;">${req.bankName}</p>
+                        <div style="font-size: 12px; font-weight: 500; color: #94a3b8; display: flex; align-items: center; gap: 4px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">schedule</span> ${displayDate}
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side: Amount & Badge -->
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
+                        <div style="font-size: 18px; font-weight: 900; color: #000000; margin-bottom: 8px; letter-spacing: 0.5px;">₹${req.amount}</div>
+                        ${badgeHtml}
+                    </div>
+                </div>
+                
+                <!-- Full Width Action Button -->
+                <button onclick="openWithdrawApprovalModal(${globalIndex})" style="width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; color: #1e293b; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'">
+                    View Details & Action
+                </button>
+                
+            </div>
+            `;
+        }).join('');
+    };
+
+    // Detailed Bank Info Modal
+    window.openWithdrawApprovalModal = function(index) {
+        const req = window.adminWithdrawData[index];
+        
+        let actionButtons = '';
+        if (req.status === 'Pending') {
+            actionButtons = `
+                <button onclick="closeAdminWithdrawModal()" style="flex: 1; padding: 12px; border: none; background: #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: bold; color: #475569;">Cancel</button>
+                <button id="verifyWithdrawBtn" onclick="approveWithdrawReq(${req.rowNumber})" style="flex: 1; padding: 12px; border: none; background: #f59e0b; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);">Withdraw Accepted</button>
+            `;
+        } else {
+            actionButtons = `
+                <button onclick="closeAdminWithdrawModal()" style="width: 100%; padding: 12px; border: none; background: #10b981; color: white; border-radius: 8px; cursor: pointer; font-weight: bold;">Close Panel</button>
+            `;
+        }
+
+        const modalHtml = `
+            <div id="adminWithdrawModalOverlay" class="custom-alert-overlay" style="display: flex;">
+                <div class="custom-alert-box" style="width: 90%; max-width: 400px; text-align: left; padding: 20px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                        <span class="material-symbols-rounded" style="color: #f59e0b; font-size: 24px; margin-right: 8px;">account_balance</span>
+                        <h3 style="color: #0f172a; font-size: 18px; margin: 0;">Withdraw Details</h3>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #cbd5e1;">
+                        <p style="margin-bottom: 8px; font-size: 14px;"><span style="color: #64748b;">Name:</span> <strong style="color: #0f172a; float: right;">${req.name}</strong></p>
+                        <p style="margin-bottom: 8px; font-size: 14px;"><span style="color: #64748b;">Amount:</span> <strong style="color: #f59e0b; float: right; font-size: 16px;">₹${req.amount}</strong></p>
+                        <p style="margin-bottom: 8px; font-size: 14px;"><span style="color: #64748b;">Bank:</span> <strong style="color: #0f172a; float: right;">${req.bankName}</strong></p>
+                        <p style="margin-bottom: 8px; font-size: 14px;"><span style="color: #64748b;">A/C No:</span> <strong style="color: #0f172a; float: right; letter-spacing: 1px;">${req.accNo}</strong></p>
+                        <p style="margin-bottom: 0px; font-size: 14px;"><span style="color: #64748b;">IFSC:</span> <strong style="color: #0f172a; float: right; text-transform: uppercase;">${req.ifsc}</strong></p>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        ${actionButtons}
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    };
+
+    window.closeAdminWithdrawModal = function() {
+        const modal = document.getElementById('adminWithdrawModalOverlay');
+        if(modal) modal.remove();
+    };
+
+    window.approveWithdrawReq = async function(rowNumber) {
+        const btn = document.getElementById('verifyWithdrawBtn');
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ 
+                    action: 'approveWithdraw', 
+                    rowNumber: rowNumber, 
+                    adminToken: sessionStorage.getItem('buildMoneyAdminToken') 
+                })
+            });
+            let result = await res.json();
+            if (result.status === "success") {
+                showCustomAlert("Withdraw Status Updated to Approved!");
+                closeAdminWithdrawModal();
+                fetchAdminWithdraws(); // Automatically refresh & transition cards
+            } else throw new Error(result.message);
+        } catch(e) {
+            btn.innerText = "Withdraw Accepted";
+            btn.disabled = false;
+            showCustomAlert("Error: " + e.message);
+        }
+    };
+
 
     // ==========================================
     // 3. MASTER AUTH STATE LISTENER (Security Check)
