@@ -902,8 +902,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const user = firebase.auth().currentUser;
         if (!user) return navigateTo('login');
 
-        // Note: Extracted email prefix as pseudo-name for DP
-        const userEmail = user.email;
+        // 🚀 IIT EXPERT FIX: Failsafe against Missing Emails
+        const userEmail = user.email || "user@buildmoney.com";
         const shortName = userEmail.split('@')[0];
 
         appContainer.innerHTML = `
@@ -917,11 +917,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="font-size: 11px; color: #a7f3d0; margin-top: 3px;">Online • Usually replies instantly</span>
                     </div>
                 </div>
-                <!-- Admin Login Button Moved Here for UI perfection -->
                 <span class="material-symbols-rounded" id="goToAdminBtn" style="font-size: 24px; color: rgba(255,255,255,0.7); cursor: pointer;">settings</span>
             </div>
             
-            <!-- 🚀 Padding bottom increased to 160px for comfortable scrolling -->
             <div class="screen" id="chatArea" style="background: #e2e8f0; min-height: 100vh; padding: 80px 15px 160px 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;">
                 <div class="text-center" style="margin-bottom: 10px;">
                     <span style="background: #cbd5e1; color: #475569; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: bold;">Today</span>
@@ -929,19 +927,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div id="messagesContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
             
-            <!-- 🚀 IIT EXPERT FIX: Bottom shifted to 85px to clear Nav Bar & UI changed to Flex-end Multiline -->
             <div style="position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; padding: 10px 15px; background: transparent; display: flex; align-items: flex-end; gap: 10px; z-index: 1000;">
-                
                 <div style="flex: 1; background: #ffffff; border-radius: 24px; display: flex; align-items: center; padding: 8px 18px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); border: 1.5px solid #f1f5f9;">
-                    <!-- Auto-expanding Textarea completely hides scrollbar until max-height -->
                     <textarea id="msgInput" placeholder="Type a message..." rows="1" style="flex: 1; border: none; padding: 6px 0; outline: none; font-size: 15px; background: transparent; resize: none; max-height: 120px; overflow-y: auto; font-family: inherit; line-height: 1.4; color: #0f172a;" oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';"></textarea>
                 </div>
-                
-                <!-- UI Height Reset Hook added to onclick (won't disturb Firebase logic) -->
-                <button id="sendMsgBtn" onclick="setTimeout(() => { document.getElementById('msgInput').style.height='auto'; }, 50);" style="background: linear-gradient(135deg, #115e59, #14b8a6); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(17, 94, 89, 0.25); cursor: pointer; transition: transform 0.15s ease;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">
+                <!-- 🚀 IIT EXPERT FIX: Removed conflicting inline onclick -->
+                <button id="sendMsgBtn" style="background: linear-gradient(135deg, #115e59, #14b8a6); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(17, 94, 89, 0.25); cursor: pointer; transition: transform 0.15s ease;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">
                     <span class="material-symbols-rounded" style="margin-left: 4px; font-size: 22px;">send</span>
                 </button>
-                
             </div>
             ${getBottomNavHTML('support')}
         `;
@@ -954,13 +947,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const chatRef = db.ref(`support_engine_v1/${user.uid}/messages`);
         const metaRef = db.ref(`support_engine_v1/${user.uid}/meta`);
 
-        // Hacker-Proof XSS Escaper
-        function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
+        // 🚀 IIT EXPERT FIX: Bulletproof XSS Escaper (Won't crash on empty text)
+        function escapeHTML(str) { 
+            if (str === null || str === undefined) return "";
+            return String(str).replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); 
+        }
 
-        // 🚀 IIT EXPERT FIX: Min-width, safe padding-bottom & white-space: nowrap applied
         function renderMsg(msg) {
+            if (!msg) return; // 🚀 Failsafe against ghost nodes
             const isMe = msg.sender === 'user';
-            const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            // 🚀 IIT EXPERT FIX: Safe Date Parsing for Mobile Sync
+            let timeStr = "";
+            if (msg.timestamp && typeof msg.timestamp === 'number') {
+                timeStr = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            }
+            
             const bubbleStyle = isMe 
                 ? `background: #dcf8c6; align-self: flex-end; border-radius: 12px 12px 0 12px;` 
                 : `background: #ffffff; align-self: flex-start; border-radius: 12px 12px 12px 0;`;
@@ -969,33 +973,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="max-width: 80%; min-width: 100px; padding: 6px 12px 20px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; ${bubbleStyle}">
                     <div style="font-size: 14.5px; color: #0f172a; word-wrap: break-word; line-height: 1.4;">${escapeHTML(msg.text)}</div>
                     <div style="font-size: 10.5px; color: #64748b; position: absolute; bottom: 4px; right: 8px; white-space: nowrap; display: flex; align-items: center; gap: 2px;">
-                        ${time} ${isMe ? '<span class="material-symbols-rounded" style="font-size: 14px; color: #3b82f6;">done_all</span>' : ''}
+                        ${timeStr} ${isMe ? '<span class="material-symbols-rounded" style="font-size: 14px; color: #3b82f6;">done_all</span>' : ''}
                     </div>
                 </div>
             `);
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        // Realtime Listener
         chatRef.on('child_added', (snapshot) => {
-            renderMsg(snapshot.val());
+            try { renderMsg(snapshot.val()); } catch(e) { console.error("Render error", e); }
         });
 
-        // Send Logic
-        document.getElementById('sendMsgBtn').addEventListener('click', () => {
+        // 🚀 IIT EXPERT FIX: Async/Await Secured Click Listener
+        document.getElementById('sendMsgBtn').addEventListener('click', async (e) => {
+            e.preventDefault(); // Prevents ghost clicks on mobile
             const input = document.getElementById('msgInput');
+            const btn = document.getElementById('sendMsgBtn');
             const text = input.value.trim();
             if(!text) return;
             
-            const timestamp = firebase.database.ServerValue.TIMESTAMP;
+            btn.style.pointerEvents = "none"; // Lock button to prevent spam crash
+            btn.style.opacity = "0.7";
             
-            // Push Message
-            chatRef.push({ sender: 'user', text: text, timestamp: timestamp });
-            
-            // Update Admin Contact Grid Meta
-            metaRef.set({ uid: user.uid, email: userEmail, name: shortName, lastMessage: text, timestamp: timestamp, unreadByAdmin: true });
-            
-            input.value = '';
+            try {
+                const timestamp = firebase.database.ServerValue.TIMESTAMP;
+                await chatRef.push({ sender: 'user', text: text, timestamp: timestamp });
+                await metaRef.set({ uid: user.uid, email: userEmail, name: shortName, lastMessage: text, timestamp: timestamp, unreadByAdmin: true });
+                
+                input.value = '';
+                input.style.height = 'auto'; // Reset textbox safely here
+            } catch (err) {
+                console.error("Chat push failed:", err);
+            } finally {
+                btn.style.pointerEvents = "auto"; // Unlock button
+                btn.style.opacity = "1";
+            }
         });
     }
 
@@ -1010,12 +1022,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </button>
                 <div class="nav-title" style="font-size: 18px; flex-grow: 1; text-align: left; font-weight: 800;">User Queries</div>
             </div>
-            
             <div class="screen" style="background-color: #ffffff; min-height: 100vh; padding: 0;">
                 <div id="contactGridList" style="display: flex; flex-direction: column;">
-                    <div class="text-center" style="padding: 40px; color: #1b6e35;">
-                        <span class="material-symbols-rounded" style="animation: spin 1s linear infinite; font-size: 32px;">sync</span>
-                    </div>
+                    <div class="text-center" style="padding: 40px; color: #1b6e35;"><span class="material-symbols-rounded" style="animation: spin 1s linear infinite; font-size: 32px;">sync</span></div>
                 </div>
             </div>
         `;
@@ -1024,58 +1033,68 @@ document.addEventListener('DOMContentLoaded', () => {
         const db = firebase.database();
         
         db.ref('support_engine_v1').on('value', (snapshot) => {
-            listContainer.innerHTML = '';
-            const data = snapshot.val();
-            if(!data) {
-                listContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; font-weight:600;">No active queries found.</div>`;
-                return;
-            }
-
-            // Convert to array & Sort chronologically (Newest first)
-            const chats = [];
-            for(let key in data) { if(data[key].meta) chats.push(data[key].meta); }
-            chats.sort((a, b) => b.timestamp - a.timestamp);
-
-            if(chats.length === 0) listContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; font-weight:600;">No active queries found.</div>`;
-
-            chats.forEach(chat => {
-                // Hacker-Proof XSS Escaper
-                const safeName = chat.name ? chat.name.replace(/[&<>'"]/g, '') : "User";
-                const safeEmail = chat.email ? chat.email.replace(/[&<>'"]/g, '') : "No Email";
-                const safeLastMsg = chat.lastMessage ? chat.lastMessage.replace(/[&<>'"]/g, '') : "Attachment/Media";
-                const firstLetter = safeName.charAt(0).toUpperCase();
-                
-                let timeStr = "";
-                if(chat.timestamp) {
-                    const d = new Date(chat.timestamp);
-                    const now = new Date();
-                    if(d.toDateString() === now.toDateString()) timeStr = d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-                    else timeStr = d.toLocaleDateString('en-US', {day:'numeric', month:'short'});
+            try {
+                listContainer.innerHTML = '';
+                const data = snapshot.val();
+                if(!data) {
+                    listContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; font-weight:600;">No active queries found.</div>`;
+                    return;
                 }
 
-                // Unread Dot UI
-                const unreadDot = chat.unreadByAdmin ? `<div style="width:10px; height:10px; background:#10b981; border-radius:50%; margin-top:5px;"></div>` : ``;
+                const chats = [];
+                for(let key in data) { if(data[key].meta) chats.push(data[key].meta); }
+                
+                // 🚀 IIT EXPERT FIX: Safe Math Sorting (Prevents NaN crashes)
+                chats.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
 
-                const chatHtml = `
-                    <div class="contact-grid-item" style="display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'" onclick="openAdminChat('${chat.uid}', '${safeName}', '${safeEmail}')">
-                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #1b6e35, #10b981); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; flex-shrink: 0; margin-right: 12px; box-shadow: 0 4px 10px rgba(16,185,129,0.2);">
-                            ${firstLetter}
-                        </div>
-                        <div style="flex-grow: 1; overflow: hidden;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
-                                <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${safeName}</h4>
-                                <span style="font-size: 11px; color: ${chat.unreadByAdmin ? '#10b981' : '#94a3b8'}; font-weight: ${chat.unreadByAdmin ? '700' : '500'};">${timeStr}</span>
+                if(chats.length === 0) {
+                    listContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; font-weight:600;">No active queries found.</div>`;
+                    return;
+                }
+
+                let htmlBuffer = "";
+                chats.forEach(chat => {
+                    // 🚀 IIT EXPERT FIX: Strict String Casting to prevent .replace() fatal crash on mobile
+                    const safeName = chat.name ? String(chat.name).replace(/[&<>'"]/g, '') : "User";
+                    const safeEmail = chat.email ? String(chat.email).replace(/[&<>'"]/g, '') : "No Email";
+                    const safeLastMsg = chat.lastMessage ? String(chat.lastMessage).replace(/[&<>'"]/g, '') : "Attachment/Media";
+                    const firstLetter = safeName.charAt(0).toUpperCase();
+                    
+                    let timeStr = "";
+                    if(chat.timestamp && typeof chat.timestamp === 'number') {
+                        const d = new Date(chat.timestamp);
+                        if (!isNaN(d.getTime())) { // Safe Date Check
+                            const now = new Date();
+                            if(d.toDateString() === now.toDateString()) timeStr = d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+                            else timeStr = d.toLocaleDateString('en-US', {day:'numeric', month:'short'});
+                        }
+                    }
+
+                    const unreadDot = chat.unreadByAdmin ? `<div style="width:10px; height:10px; background:#10b981; border-radius:50%; margin-top:5px;"></div>` : ``;
+
+                    htmlBuffer += `
+                        <div class="contact-grid-item" style="display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'" onclick="openAdminChat('${chat.uid}', '${safeName}', '${safeEmail}')">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #1b6e35, #10b981); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; flex-shrink: 0; margin-right: 12px; box-shadow: 0 4px 10px rgba(16,185,129,0.2);">
+                                ${firstLetter}
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <p style="margin: 0; font-size: 13px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85%;">${safeLastMsg}</p>
-                                ${unreadDot}
+                            <div style="flex-grow: 1; overflow: hidden;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                                    <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${safeName}</h4>
+                                    <span style="font-size: 11px; color: ${chat.unreadByAdmin ? '#10b981' : '#94a3b8'}; font-weight: ${chat.unreadByAdmin ? '700' : '500'};">${timeStr}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <p style="margin: 0; font-size: 13px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85%;">${safeLastMsg}</p>
+                                    ${unreadDot}
+                                </div>
+                                <p style="margin: 2px 0 0 0; font-size: 10px; color: #94a3b8;">${safeEmail}</p>
                             </div>
-                            <p style="margin: 2px 0 0 0; font-size: 10px; color: #94a3b8;">${safeEmail}</p>
                         </div>
-                    </div>
-                `;
-                listContainer.insertAdjacentHTML('beforeend', chatHtml);
-            });
+                    `;
+                });
+                listContainer.innerHTML = htmlBuffer; // Single fast DOM write prevents WebView freeze
+            } catch(error) {
+                console.error("Admin List Render Error:", error);
+            }
         });
     }
 
@@ -1112,18 +1131,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div id="adminMessagesContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
             
-            <!-- 🚀 IIT EXPERT FIX: Admin Side Flex-end Multiline Glassmorphism Input -->
             <div style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; padding: 12px 15px; background: rgba(248, 250, 252, 0.85); backdrop-filter: blur(10px); display: flex; align-items: flex-end; gap: 10px; z-index: 1000; border-top: 1px solid rgba(226, 232, 240, 0.8);">
-                
                 <div style="flex: 1; background: #ffffff; border-radius: 24px; display: flex; align-items: center; padding: 8px 18px; border: 1.5px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
                     <textarea id="adminMsgInput" placeholder="Reply as Admin..." rows="1" style="flex: 1; border: none; padding: 6px 0; outline: none; font-size: 15px; background: transparent; resize: none; max-height: 120px; overflow-y: auto; font-family: inherit; line-height: 1.4; color: #0f172a;" oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';"></textarea>
                 </div>
-                
-                <!-- UI Height Reset Hook added -->
-                <button id="adminSendMsgBtn" onclick="setTimeout(() => { document.getElementById('adminMsgInput').style.height='auto'; }, 50);" style="background: linear-gradient(135deg, #0f172a, #334155); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(15, 23, 42, 0.2); cursor: pointer; transition: transform 0.15s ease;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">
+                <!-- 🚀 IIT EXPERT FIX: Removed conflicting inline onclick -->
+                <button id="adminSendMsgBtn" style="background: linear-gradient(135deg, #0f172a, #334155); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(15, 23, 42, 0.2); cursor: pointer; transition: transform 0.15s ease;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">
                     <span class="material-symbols-rounded" style="margin-left: 4px; font-size: 22px;">send</span>
                 </button>
-                
             </div>
         `;
 
@@ -1133,15 +1148,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const chatRef = db.ref(`support_engine_v1/${uid}/messages`);
         const metaRef = db.ref(`support_engine_v1/${uid}/meta`);
 
-        // Mark as read when admin opens chat
         metaRef.update({ unreadByAdmin: false });
 
-        function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
+        function escapeHTML(str) { 
+            if (!str) return "";
+            return String(str).replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); 
+        }
 
-        // 🚀 IIT EXPERT FIX: Min-width & nowrap sync for Admin panel
         function renderMsg(msg) {
+            if (!msg) return; // 🚀 Failsafe
             const isAdmin = msg.sender === 'admin';
-            const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            let timeStr = "";
+            if (msg.timestamp && typeof msg.timestamp === 'number') {
+                timeStr = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            }
+            
             const bubbleStyle = isAdmin 
                 ? `background: #dcf8c6; align-self: flex-end; border-radius: 12px 12px 0 12px; border: 1px solid #bbf7d0;` 
                 : `background: #ffffff; align-self: flex-start; border-radius: 12px 12px 12px 0; border: 1px solid #f1f5f9;`;
@@ -1150,7 +1174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="max-width: 80%; min-width: 90px; padding: 6px 12px 20px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; ${bubbleStyle}">
                     <div style="font-size: 14.5px; color: #0f172a; word-wrap: break-word; line-height: 1.4;">${escapeHTML(msg.text)}</div>
                     <div style="font-size: 10.5px; color: #64748b; position: absolute; bottom: 4px; right: 8px; white-space: nowrap;">
-                        ${time}
+                        ${timeStr}
                     </div>
                 </div>
             `);
@@ -1158,22 +1182,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         chatRef.on('child_added', (snapshot) => {
-            renderMsg(snapshot.val());
-            // Clear unread badge dynamically if admin is inside chat
-            metaRef.update({ unreadByAdmin: false });
+            try { 
+                renderMsg(snapshot.val()); 
+                metaRef.update({ unreadByAdmin: false });
+            } catch(e) {}
         });
 
-        document.getElementById('adminSendMsgBtn').addEventListener('click', () => {
+        // 🚀 IIT EXPERT FIX: Secure Admin Click Logic
+        document.getElementById('adminSendMsgBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
             const input = document.getElementById('adminMsgInput');
+            const btn = document.getElementById('adminSendMsgBtn');
             const text = input.value.trim();
             if(!text) return;
             
-            const timestamp = firebase.database.ServerValue.TIMESTAMP;
+            btn.style.pointerEvents = "none";
+            btn.style.opacity = "0.7";
             
-            chatRef.push({ sender: 'admin', text: text, timestamp: timestamp });
-            metaRef.update({ lastMessage: text, timestamp: timestamp, unreadByAdmin: false });
-            
-            input.value = '';
+            try {
+                const timestamp = firebase.database.ServerValue.TIMESTAMP;
+                await chatRef.push({ sender: 'admin', text: text, timestamp: timestamp });
+                await metaRef.update({ lastMessage: text, timestamp: timestamp, unreadByAdmin: false });
+                
+                input.value = '';
+                input.style.height = 'auto';
+            } catch(e) {
+                console.error("Admin Send Failed", e);
+            } finally {
+                btn.style.pointerEvents = "auto";
+                btn.style.opacity = "1";
+            }
         });
     }
 
