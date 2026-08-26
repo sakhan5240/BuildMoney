@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const firebaseConfig = {
     apiKey: "AIzaSyAUpAKZ2SrcjT8p1o05KUDf4cy3G2zZbg4",
     authDomain: "buildmoney.firebaseapp.com",
+    databaseURL: "https://buildmoney-default-rtdb.asia-southeast1.firebasedatabase.app/", // 🚀 IIT EXPERT FIX: Exact Premium Asian Server RTDB Link Added
     projectId: "buildmoney",
     storageBucket: "buildmoney.firebasestorage.app",
     messagingSenderId: "730117973114",
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // MASTER GOOGLE SCRIPT URL (Global Engine Scope)
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuZTlyyZUlGnLpYRAn5NXST1xNiotBft0S56HPUSDBja1eqe85vy14FKzj08alKJXS3g/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwjFRnvhYpOqdKWBUPq62dY8E-kbji14q9uOTvdBUcIzhqNcDYEUWeR_-ofARXCFWiOyQ/exec";
 
     // ==========================================
     // PREMIUM CUSTOM ALERT FUNCTION
@@ -88,7 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (screen === 'adminLogin') renderAdminLoginScreen(); // 🚀 Advanced Admin Engine Route
         else if (screen === 'adminDashboard') renderAdminDashboardScreen(); 
         else if (screen === 'adminDepositRequests') renderAdminDepositRequestsScreen(); 
-        else if (screen === 'adminWithdrawRequests') renderAdminWithdrawRequestsScreen(); // 🚀 Admin Withdraw List Route
+        else if (screen === 'adminWithdrawRequests') renderAdminWithdrawRequestsScreen(); 
+        else if (screen === 'adminQueries') renderAdminQueriesScreen(); // 🚀 Premium Queries List Route
+        else if (screen === 'adminChat') renderAdminChatScreen(); // 🚀 Admin Chat Engine Route
         else renderLoginScreen();
     };
 
@@ -277,13 +280,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.innerHTML = "Saving Details...";
                 let saveResponse = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    // 🚀 IIT EXPERT FIX: Added strict headers to bypass any browser CORS blocks
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({
                         action: 'registerUser',
                         name: name,
                         email: email,
-                        uid: secureUid // 🚀 Exact UID matching the backend shield requirement
+                        uid: secureUid,
+                        appliedReferral: inputReferral // 🚀 Sending Code to Backend securely
                     })
                 });
                 let saveData = await saveResponse.json();
@@ -437,14 +440,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
-                <!-- Daily Bonus Golden Card -->
-                <div class="bonus-card">
-                    <div class="bonus-content">
-                        <h3>Daily Bonus</h3>
-                        <p>Claim Rs. 20 daily</p>
-                        <div class="claimed-days" id="totalClaimedDaysText">Total claimed: 0 days</div>
+                <!-- 🚀 IIT EXPERT FIX: Bulletproof Responsive Layout (Overrides External CSS Columns) -->
+                <div class="bonus-card" style="background: #ffffff; border-radius: 20px; padding: 14px 16px; margin-bottom: 25px; border: 1.5px solid #fff0e6; position: relative; overflow: hidden;">
+                    
+                    <!-- Premium Glow Effect -->
+                    <div style="position: absolute; top: -30px; left: -30px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(250,70,5,0.08) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; z-index: 0;"></div>
+
+                    <!-- 🚀 MASTER FLEX ROW: !important forces button to stay strictly on the right side always -->
+                    <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; gap: 8px; position: relative; z-index: 1;">
+                        
+                        <!-- Left Content Container -->
+                        <div style="display: flex !important; flex-direction: row !important; align-items: center !important; gap: 10px; flex-grow: 1; min-width: 0;">
+                            
+                            <!-- Premium Icon Box -->
+                            <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #fff7ed, #ffedd5); border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(250, 70, 5, 0.1); flex-shrink: 0;">
+                                <span class="material-symbols-rounded" style="font-size: 24px; color: #FA4605;">redeem</span>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; justify-content: center; min-width: 0;">
+                                <h3 style="margin: 0 0 2px 0 !important; font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: 0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Daily Bonus</h3>
+                                <p style="margin: 0 0 4px 0 !important; font-size: 11px; color: #64748b; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Claim <span style="color: #FA4605; font-weight: 800;">₹20</span> every day</p>
+                                
+                                <!-- Untouched Logic ID -->
+                                <div class="claimed-days" id="totalClaimedDaysText" style="display: inline-flex; align-items: center; gap: 4px; background: #f8fafc; padding: 4px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; color: #475569; border: 1px solid #e2e8f0; width: fit-content; white-space: nowrap;">
+                                    <span class="material-symbols-rounded" style="font-size: 11px; color: #10b981;">task_alt</span> Total: 0 days
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Button Container (Locked from shrinking and external margins) -->
+                        <div style="flex-shrink: 0;">
+                            <!-- Untouched Logic ID -->
+                            <button class="btn-golden" id="claimBonusBtn" disabled style="background: #e2e8f0; color: #ffffff; border: none; padding: 10px 14px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; white-space: nowrap; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 6px 15px rgba(250, 70, 5, 0.25); text-shadow: 0 1px 2px rgba(0,0,0,0.15); margin: 0 !important; display: block !important;" onmousedown="this.style.transform='scale(0.92)'" onmouseup="this.style.transform='scale(1)'">Loading...</button>
+                        </div>
+
                     </div>
-                    <button class="btn-golden" id="claimBonusBtn" disabled>Loading...</button>
                 </div>
 
                 <!-- 🚀 IIT EXPERT FIX: Fully Clickable Premium Plan Card -->
@@ -698,37 +728,452 @@ document.addEventListener('DOMContentLoaded', () => {
         appContainer.innerHTML = generateUpcomingScreen("Submit Work", "description") + getBottomNavHTML('submit');
     }
 
+    // ==========================================
+    // 🚀 PREMIUM 5-LEVEL TEAM & REWARD ENGINE UI
+    // ==========================================
     function renderTeamScreen() {
-        appContainer.innerHTML = generateUpcomingScreen("My Team", "groups") + getBottomNavHTML('team');
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 1000;">
+                <div class="nav-title" style="flex-grow: 1; text-align: center; font-size: 20px; font-weight: 800; color: #0f172a;">Team Work</div>
+            </div>
+
+            <div class="screen" style="background: #f8fafc; min-height: 100vh; padding-top: 20px; padding-bottom: 100px;">
+                
+                <!-- 🚀 Professional Sharing Card -->
+                <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 20px; padding: 25px 20px; color: white; text-align: center; margin-bottom: 30px;">
+                    <p style="font-size: 13px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Your Unique Referral Code</p>
+                    <h2 id="myRefCodeDisplay" style="font-size: 36px; font-weight: 900; letter-spacing: 3px; margin: 0 0 20px 0; color: #10b981;">------</h2>
+                    
+                    <div style="display: flex; gap: 15px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 16px; justify-content: center; margin-bottom: 20px;">
+                        <div style="text-align: center; flex: 1;">
+                            <p style="margin: 0; font-size: 20px; font-weight: 800;" id="activeDirectCount">-</p>
+                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">Direct Active</p>
+                        </div>
+                        <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+                        <div style="text-align: center; flex: 1;">
+                            <p style="margin: 0; font-size: 20px; font-weight: 800; color: #10b981;" id="activeTotalCount">-</p>
+                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">Total Active Team</p>
+                        </div>
+                    </div>
+
+                    <!-- Native Share Button -->
+                    <button onclick="shareMyReferral()" style="width: 100%; background: #10b981; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); cursor: pointer; transition: 0.2s;" onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform='scale(1)'">
+                        <span class="material-symbols-rounded">share</span> Share Referral Code
+                    </button>
+                </div>
+
+                <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 15px; padding-left: 5px;">Reward Targets</h3>
+                
+                <!-- 🚀 DYNAMIC 5-LEVEL CARDS INJECTOR -->
+                <div id="rewardCardsContainer" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="text-center" style="padding: 20px; color: #1b6e35;"><span class="material-symbols-outlined" style="animation: spin 1s linear infinite; font-size: 32px;">sync</span></div>
+                </div>
+            </div>
+            ${getBottomNavHTML('team')}
+        `;
+
+        const user = firebase.auth().currentUser;
+        if(user) fetchTeamData(user.email);
+
+        async function fetchTeamData(email) {
+            try {
+                let res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: 'getTeamStats', email: email })
+                });
+                let data = await res.json();
+
+                if (data.status === "success") {
+                    document.getElementById('myRefCodeDisplay').innerText = data.myReferralCode || "ERROR";
+                    document.getElementById('activeDirectCount').innerText = data.activeDirect;
+                    document.getElementById('activeTotalCount').innerText = data.activeTotal;
+
+                    renderRewardCards(data.activeDirect, data.activeTotal, data.rewardLevel);
+                }
+            } catch(e) {
+                console.error("Team Fetch Error:", e);
+            }
+        }
+
+        function renderRewardCards(dCount, tCount, userLevel) {
+            const container = document.getElementById('rewardCardsContainer');
+            
+            // 5 Levels Configuration Array
+            const plans = [
+                { lvl: 1, title: "Starter Reward", amt: 1500, tgtD: 5, tgtT: 0, sub: "Need 5 direct active" },
+                { lvl: 2, title: "Team Builder", amt: 4000, tgtD: 15, tgtT: 35, sub: "Need 15 direct & 35 total team" },
+                { lvl: 3, title: "Team Leader", amt: 6000, tgtD: 20, tgtT: 50, sub: "Need 20 direct & 50 total team" },
+                { lvl: 4, title: "Elite Achiever", amt: 10000, tgtD: 35, tgtT: 100, sub: "Need 35 direct & 100 total team" },
+                { lvl: 5, title: "Salary Achiever", amt: 75000, tgtD: 0, tgtT: 500, sub: "Need 500 total team active" }
+            ];
+
+            let html = "";
+            plans.forEach(plan => {
+                const isLocked = userLevel >= plan.lvl; // The Tala (Lock)
+                const isNextTarget = userLevel === (plan.lvl - 1); // Highlight active target
+
+                let cardStyle = isNextTarget ? `border: 1.5px solid #10b981; box-shadow: 0 4px 15px rgba(16,185,129,0.15);` : `border: 1.5px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.03); opacity: ${isLocked ? '0.85' : '1'};`;
+                
+                let lockUI = ``;
+                let progressUI = ``;
+
+                if (isLocked) {
+                    lockUI = `
+                        <div style="margin-top: 15px; background: #fef3c7; color: #d97706; padding: 10px 15px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1.5px dashed #fcd34d;">
+                            <span class="material-symbols-rounded" style="font-size: 18px;">lock</span> Fulfilled, ₹${plan.amt} added to Wallet!
+                        </div>
+                    `;
+                } else {
+                    // Direct Progress Bar
+                    if (plan.tgtD > 0) {
+                        let dispD = Math.min(dCount, plan.tgtD);
+                        let pctD = (dispD / plan.tgtD) * 100;
+                        progressUI += `
+                        <div style="margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="font-size: 13px; font-weight: 800; color: #0f172a;">Direct</span>
+                                <span style="font-size: 13px; font-weight: 800; color: #0f172a;">${dispD}/${plan.tgtD}</span>
+                            </div>
+                            <div style="width: 100%; height: 6px; background: #f1f5f9; border-radius: 10px; overflow: hidden; position: relative;">
+                                <div style="height: 100%; background: #1b6e35; width: ${pctD}%; border-radius: 10px; transition: width 1s;"></div>
+                            </div>
+                        </div>`;
+                    }
+                    // Total Progress Bar
+                    if (plan.tgtT > 0) {
+                        let dispT = Math.min(tCount, plan.tgtT);
+                        let pctT = (dispT / plan.tgtT) * 100;
+                        progressUI += `
+                        <div style="margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="font-size: 13px; font-weight: 800; color: #0f172a;">Team</span>
+                                <span style="font-size: 13px; font-weight: 800; color: #0f172a;">${dispT}/${plan.tgtT}</span>
+                            </div>
+                            <div style="width: 100%; height: 6px; background: #f1f5f9; border-radius: 10px; overflow: hidden; position: relative;">
+                                <div style="height: 100%; background: #1b6e35; width: ${pctT}%; border-radius: 10px; transition: width 1s;"></div>
+                            </div>
+                        </div>`;
+                    }
+                }
+
+                html += `
+                <div style="background: #ffffff; border-radius: 20px; padding: 20px; ${cardStyle}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">${plan.title}</h4>
+                            <p style="font-size: 11px; color: #64748b; font-weight: 600; margin: 5px 0 0 0;">${plan.sub}</p>
+                        </div>
+                        <div style="background: #f1f5f9; padding: 6px 12px; border-radius: 16px; opacity: ${isLocked ? '0.5' : '1'};">
+                            <span style="font-size: 14px; font-weight: 900; color: #475569;">₹${plan.amt}</span>
+                        </div>
+                    </div>
+                    ${lockUI}
+                    ${progressUI}
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.shareMyReferral = function() {
+            const code = document.getElementById('myRefCodeDisplay').innerText;
+            if (code === "------" || code === "ERROR") return showCustomAlert("Code loading...");
+            const shareText = `Hey! Join Build Money and start earning daily. Use my Referral Code: *${code}* during registration.`;
+            if (navigator.share) {
+                navigator.share({ title: 'Join Build Money', text: shareText, url: window.location.origin }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(`${shareText} ${window.location.origin}`);
+                showCustomAlert("Referral Text & Link Copied to Clipboard!");
+            }
+        }
     }
 
     function renderWalletScreen() {
         appContainer.innerHTML = generateUpcomingScreen("Wallet & Transactions", "account_balance_wallet") + getBottomNavHTML('wallet');
     }
 
+
+    // ==========================================
+    // 🚀 PREMIUM WHATSAPP-STYLE CHAT ENGINE (100% Hacker-Proof)
+    // ==========================================
+    
+    // 1. USER SIDE SUPPORT SCREEN
     function renderSupportScreen() {
+        const user = firebase.auth().currentUser;
+        if (!user) return navigateTo('login');
+
+        // Note: Extracted email prefix as pseudo-name for DP
+        const userEmail = user.email;
+        const shortName = userEmail.split('@')[0];
+
         appContainer.innerHTML = `
-            <div class="top-nav">
-                <div class="nav-title" style="flex-grow: 1; text-align: left; font-size: 20px;">Help & Support</div>
-                <!-- Premium Admin Engine Navigation Button -->
-                <button class="back-btn" id="goToAdminBtn" style="margin-right: 0; color: white; transition: transform 0.2s; border: 1px solid blue; padding: 5px; border-radius: 10px; background: blue;">
-                    <span class="material-symbols-rounded">server_person</span>&nbsp; <span style="font-weight: bold;"> Admin Login</span>
-                </button>
-            </div>
-            <div class="dashboard-layout" style="animation: fadeIn 0.3s ease-in-out;">
-                <div class="plan-card text-center" style="margin-top: 40px;">
-                    <span class="material-symbols-rounded text-green" style="font-size: 50px; margin-bottom: 15px;">support_agent</span>
-                    <h3>Support Feature</h3>
-                    <p>Bhai, yeh screen ka support chat jaldi hi connect hoga.</p>
+            <div class="top-nav" style="background: #115e59; color: white; padding: 12px 15px; display: flex; align-items: center; border-bottom: none; z-index: 1000; position: fixed; width: 100%; top: 0; max-width: 480px;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-grow: 1;">
+                    <div style="width: 40px; height: 40px; background: #ffffff; color: #115e59; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                        A
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 16px; font-weight: 800; line-height: 1;">Admin Support</span>
+                        <span style="font-size: 11px; color: #a7f3d0; margin-top: 3px;">Online • Usually replies instantly</span>
+                    </div>
                 </div>
+                <!-- Admin Login Button Moved Here for UI perfection -->
+                <span class="material-symbols-rounded" id="goToAdminBtn" style="font-size: 24px; color: rgba(255,255,255,0.7); cursor: pointer;">settings</span>
+            </div>
+            
+            <!-- 🚀 Padding bottom increased to 160px for comfortable scrolling -->
+            <div class="screen" id="chatArea" style="background: #e2e8f0; min-height: 100vh; padding: 80px 15px 160px 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;">
+                <div class="text-center" style="margin-bottom: 10px;">
+                    <span style="background: #cbd5e1; color: #475569; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: bold;">Today</span>
+                </div>
+                <div id="messagesContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+            
+            <!-- 🚀 IIT EXPERT FIX: Bottom shifted to 85px to clear Nav Bar & UI changed to Flex-end Multiline -->
+            <div style="position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; padding: 10px 15px; background: transparent; display: flex; align-items: flex-end; gap: 10px; z-index: 1000;">
+                
+                <div style="flex: 1; background: #ffffff; border-radius: 24px; display: flex; align-items: center; padding: 8px 18px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); border: 1.5px solid #f1f5f9;">
+                    <!-- Auto-expanding Textarea completely hides scrollbar until max-height -->
+                    <textarea id="msgInput" placeholder="Type a message..." rows="1" style="flex: 1; border: none; padding: 6px 0; outline: none; font-size: 15px; background: transparent; resize: none; max-height: 120px; overflow-y: auto; font-family: inherit; line-height: 1.4; color: #0f172a;" oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';"></textarea>
+                </div>
+                
+                <!-- UI Height Reset Hook added to onclick (won't disturb Firebase logic) -->
+                <button id="sendMsgBtn" onclick="setTimeout(() => { document.getElementById('msgInput').style.height='auto'; }, 50);" style="background: linear-gradient(135deg, #115e59, #14b8a6); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(17, 94, 89, 0.25); cursor: pointer; transition: transform 0.15s ease;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">
+                    <span class="material-symbols-rounded" style="margin-left: 4px; font-size: 22px;">send</span>
+                </button>
+                
             </div>
             ${getBottomNavHTML('support')}
         `;
 
-        document.getElementById('goToAdminBtn').addEventListener('click', () => {
-            // Icon pe click karte hi shrink effect and redirect
-            document.getElementById('goToAdminBtn').style.transform = 'scale(0.8)';
-            setTimeout(() => navigateTo('adminLogin'), 150);
+        document.getElementById('goToAdminBtn').addEventListener('click', () => navigateTo('adminLogin'));
+
+        const msgContainer = document.getElementById('messagesContainer');
+        const chatArea = document.getElementById('chatArea');
+        const db = firebase.database();
+        const chatRef = db.ref(`support_engine_v1/${user.uid}/messages`);
+        const metaRef = db.ref(`support_engine_v1/${user.uid}/meta`);
+
+        // Hacker-Proof XSS Escaper
+        function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
+
+        // 🚀 IIT EXPERT FIX: Min-width, safe padding-bottom & white-space: nowrap applied
+        function renderMsg(msg) {
+            const isMe = msg.sender === 'user';
+            const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const bubbleStyle = isMe 
+                ? `background: #dcf8c6; align-self: flex-end; border-radius: 12px 12px 0 12px;` 
+                : `background: #ffffff; align-self: flex-start; border-radius: 12px 12px 12px 0;`;
+
+            msgContainer.insertAdjacentHTML('beforeend', `
+                <div style="max-width: 80%; min-width: 100px; padding: 6px 12px 20px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; ${bubbleStyle}">
+                    <div style="font-size: 14.5px; color: #0f172a; word-wrap: break-word; line-height: 1.4;">${escapeHTML(msg.text)}</div>
+                    <div style="font-size: 10.5px; color: #64748b; position: absolute; bottom: 4px; right: 8px; white-space: nowrap; display: flex; align-items: center; gap: 2px;">
+                        ${time} ${isMe ? '<span class="material-symbols-rounded" style="font-size: 14px; color: #3b82f6;">done_all</span>' : ''}
+                    </div>
+                </div>
+            `);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Realtime Listener
+        chatRef.on('child_added', (snapshot) => {
+            renderMsg(snapshot.val());
+        });
+
+        // Send Logic
+        document.getElementById('sendMsgBtn').addEventListener('click', () => {
+            const input = document.getElementById('msgInput');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            const timestamp = firebase.database.ServerValue.TIMESTAMP;
+            
+            // Push Message
+            chatRef.push({ sender: 'user', text: text, timestamp: timestamp });
+            
+            // Update Admin Contact Grid Meta
+            metaRef.set({ uid: user.uid, email: userEmail, name: shortName, lastMessage: text, timestamp: timestamp, unreadByAdmin: true });
+            
+            input.value = '';
+        });
+    }
+
+    // ==========================================
+    // 2. ADMIN SIDE: CONTACT GRID (WhatsApp Style)
+    // ==========================================
+    function renderAdminQueriesScreen() {
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+                <button class="back-btn" onclick="navigateTo('adminDashboard')">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <div class="nav-title" style="font-size: 18px; flex-grow: 1; text-align: left; font-weight: 800;">User Queries</div>
+            </div>
+            
+            <div class="screen" style="background-color: #ffffff; min-height: 100vh; padding: 0;">
+                <div id="contactGridList" style="display: flex; flex-direction: column;">
+                    <div class="text-center" style="padding: 40px; color: #1b6e35;">
+                        <span class="material-symbols-rounded" style="animation: spin 1s linear infinite; font-size: 32px;">sync</span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const listContainer = document.getElementById('contactGridList');
+        const db = firebase.database();
+        
+        db.ref('support_engine_v1').on('value', (snapshot) => {
+            listContainer.innerHTML = '';
+            const data = snapshot.val();
+            if(!data) {
+                listContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; font-weight:600;">No active queries found.</div>`;
+                return;
+            }
+
+            // Convert to array & Sort chronologically (Newest first)
+            const chats = [];
+            for(let key in data) { if(data[key].meta) chats.push(data[key].meta); }
+            chats.sort((a, b) => b.timestamp - a.timestamp);
+
+            if(chats.length === 0) listContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; font-weight:600;">No active queries found.</div>`;
+
+            chats.forEach(chat => {
+                // Hacker-Proof XSS Escaper
+                const safeName = chat.name ? chat.name.replace(/[&<>'"]/g, '') : "User";
+                const safeEmail = chat.email ? chat.email.replace(/[&<>'"]/g, '') : "No Email";
+                const safeLastMsg = chat.lastMessage ? chat.lastMessage.replace(/[&<>'"]/g, '') : "Attachment/Media";
+                const firstLetter = safeName.charAt(0).toUpperCase();
+                
+                let timeStr = "";
+                if(chat.timestamp) {
+                    const d = new Date(chat.timestamp);
+                    const now = new Date();
+                    if(d.toDateString() === now.toDateString()) timeStr = d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+                    else timeStr = d.toLocaleDateString('en-US', {day:'numeric', month:'short'});
+                }
+
+                // Unread Dot UI
+                const unreadDot = chat.unreadByAdmin ? `<div style="width:10px; height:10px; background:#10b981; border-radius:50%; margin-top:5px;"></div>` : ``;
+
+                const chatHtml = `
+                    <div class="contact-grid-item" style="display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'" onclick="openAdminChat('${chat.uid}', '${safeName}', '${safeEmail}')">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #1b6e35, #10b981); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; flex-shrink: 0; margin-right: 12px; box-shadow: 0 4px 10px rgba(16,185,129,0.2);">
+                            ${firstLetter}
+                        </div>
+                        <div style="flex-grow: 1; overflow: hidden;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                                <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${safeName}</h4>
+                                <span style="font-size: 11px; color: ${chat.unreadByAdmin ? '#10b981' : '#94a3b8'}; font-weight: ${chat.unreadByAdmin ? '700' : '500'};">${timeStr}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <p style="margin: 0; font-size: 13px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85%;">${safeLastMsg}</p>
+                                ${unreadDot}
+                            </div>
+                            <p style="margin: 2px 0 0 0; font-size: 10px; color: #94a3b8;">${safeEmail}</p>
+                        </div>
+                    </div>
+                `;
+                listContainer.insertAdjacentHTML('beforeend', chatHtml);
+            });
+        });
+    }
+
+    // Route trigger for clicking a specific chat
+    window.openAdminChat = function(uid, name, email) {
+        window.activeChatMeta = { uid, name, email };
+        navigateTo('adminChat');
+    }
+
+    // ==========================================
+    // 3. ADMIN SIDE: CHAT ROOM
+    // ==========================================
+    function renderAdminChatScreen() {
+        if(!window.activeChatMeta) return navigateTo('adminQueries');
+        const { uid, name, email } = window.activeChatMeta;
+
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background: #0f172a; color: white; padding: 12px 15px; display: flex; align-items: center; border-bottom: none; z-index: 1000; position: fixed; width: 100%; top: 0; max-width: 480px;">
+                <button class="back-btn" onclick="navigateTo('adminQueries')" style="color: white; margin-right: 10px;">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <div style="display: flex; align-items: center; gap: 10px; flex-grow: 1;">
+                    <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #1b6e35, #10b981); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">
+                        ${name.charAt(0).toUpperCase()}
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 15px; font-weight: 800; line-height: 1;">${name}</span>
+                        <span style="font-size: 10px; color: #cbd5e1; margin-top: 3px;">${email}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="screen" id="adminChatArea" style="background: #e2e8f0; min-height: 100vh; padding: 80px 15px 80px 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;">
+                <div id="adminMessagesContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+            
+            <!-- 🚀 IIT EXPERT FIX: Admin Side Flex-end Multiline Glassmorphism Input -->
+            <div style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; padding: 12px 15px; background: rgba(248, 250, 252, 0.85); backdrop-filter: blur(10px); display: flex; align-items: flex-end; gap: 10px; z-index: 1000; border-top: 1px solid rgba(226, 232, 240, 0.8);">
+                
+                <div style="flex: 1; background: #ffffff; border-radius: 24px; display: flex; align-items: center; padding: 8px 18px; border: 1.5px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                    <textarea id="adminMsgInput" placeholder="Reply as Admin..." rows="1" style="flex: 1; border: none; padding: 6px 0; outline: none; font-size: 15px; background: transparent; resize: none; max-height: 120px; overflow-y: auto; font-family: inherit; line-height: 1.4; color: #0f172a;" oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';"></textarea>
+                </div>
+                
+                <!-- UI Height Reset Hook added -->
+                <button id="adminSendMsgBtn" onclick="setTimeout(() => { document.getElementById('adminMsgInput').style.height='auto'; }, 50);" style="background: linear-gradient(135deg, #0f172a, #334155); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(15, 23, 42, 0.2); cursor: pointer; transition: transform 0.15s ease;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">
+                    <span class="material-symbols-rounded" style="margin-left: 4px; font-size: 22px;">send</span>
+                </button>
+                
+            </div>
+        `;
+
+        const msgContainer = document.getElementById('adminMessagesContainer');
+        const chatArea = document.getElementById('adminChatArea');
+        const db = firebase.database();
+        const chatRef = db.ref(`support_engine_v1/${uid}/messages`);
+        const metaRef = db.ref(`support_engine_v1/${uid}/meta`);
+
+        // Mark as read when admin opens chat
+        metaRef.update({ unreadByAdmin: false });
+
+        function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
+
+        // 🚀 IIT EXPERT FIX: Min-width & nowrap sync for Admin panel
+        function renderMsg(msg) {
+            const isAdmin = msg.sender === 'admin';
+            const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const bubbleStyle = isAdmin 
+                ? `background: #dcf8c6; align-self: flex-end; border-radius: 12px 12px 0 12px; border: 1px solid #bbf7d0;` 
+                : `background: #ffffff; align-self: flex-start; border-radius: 12px 12px 12px 0; border: 1px solid #f1f5f9;`;
+
+            msgContainer.insertAdjacentHTML('beforeend', `
+                <div style="max-width: 80%; min-width: 90px; padding: 6px 12px 20px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; ${bubbleStyle}">
+                    <div style="font-size: 14.5px; color: #0f172a; word-wrap: break-word; line-height: 1.4;">${escapeHTML(msg.text)}</div>
+                    <div style="font-size: 10.5px; color: #64748b; position: absolute; bottom: 4px; right: 8px; white-space: nowrap;">
+                        ${time}
+                    </div>
+                </div>
+            `);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        chatRef.on('child_added', (snapshot) => {
+            renderMsg(snapshot.val());
+            // Clear unread badge dynamically if admin is inside chat
+            metaRef.update({ unreadByAdmin: false });
+        });
+
+        document.getElementById('adminSendMsgBtn').addEventListener('click', () => {
+            const input = document.getElementById('adminMsgInput');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            const timestamp = firebase.database.ServerValue.TIMESTAMP;
+            
+            chatRef.push({ sender: 'admin', text: text, timestamp: timestamp });
+            metaRef.update({ lastMessage: text, timestamp: timestamp, unreadByAdmin: false });
+            
+            input.value = '';
         });
     }
 
@@ -756,11 +1201,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
-                <div class="payment-instruction-box">
-                    <h4 class="text-green font-bold" style="margin-bottom: 10px; font-size: 15px;">Payment Instructions</h4>
-                    <p style="margin-bottom: 8px; font-size: 14px; font-weight: 500;">UPI ID: <strong id="dynamicUpiDisplay" style="color: #1b6e35; font-size: 16px;">Loading...</strong></p>
-                    <p style="margin-bottom: 12px; font-size: 14px; font-weight: 500;">Amount: <strong id="dynamicAmount" style="color: #000;">Loading...</strong></p>
-                    <p style="font-size: 13px; color: #1b6e35;">Kindly Upload your screenshot after payment.</p>
+                <!-- 🚀 IIT EXPERT FIX: Premium Payment Instructions with QR Code Integration -->
+                <div class="payment-instruction-box" style="position: relative; padding: 18px; background: #ffffff; border-radius: 14px; border: 1.5px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 class="text-green font-bold" style="margin-bottom: 12px; font-size: 15px; display: flex; align-items: center; gap: 6px;">
+                                <span class="material-symbols-rounded">account_balance</span> Payment Info
+                            </h4>
+                            <p style="margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #64748b;">UPI ID: <strong id="dynamicUpiDisplay" style="color: #0f172a; font-size: 15px; user-select: all;">Loading...</strong></p>
+                            <p style="margin-bottom: 12px; font-size: 13px; font-weight: 600; color: #64748b;">Amount: <strong id="dynamicAmount" style="color: #1b6e35; font-size: 16px; font-weight: 900;">Loading...</strong></p>
+                        </div>
+                        
+                        <!-- 🚀 The Premium QR Button -->
+                        <button id="generateQrBtn" type="button" style="background: #1b6e35; color: white; border: none; padding: 10px 14px; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: 0 4px 12px rgba(27, 110, 53, 0.2); transition: transform 0.2s;" onmousedown="this.style.transform='scale(0.92)'" onmouseup="this.style.transform='scale(1)'">
+                            <span class="material-symbols-rounded" style="font-size: 24px;">qr_code_2</span>
+                            <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.5px;">Pay via QR</span>
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 8px; padding-top: 12px; border-top: 1px dashed #cbd5e1;">
+                        <p style="font-size: 12px; color: #1b6e35; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                            <span class="material-symbols-rounded" style="font-size: 16px;">info</span> Please upload screenshot after successful payment.
+                        </p>
+                    </div>
                 </div>
 
                 <h3 class="section-title">Payment Screenshot</h3>
@@ -883,6 +1346,70 @@ document.addEventListener('DOMContentLoaded', () => {
         
         fetchPlansFromServer(); 
         fetchLiveUpi(); // Trigger UPI Fetch
+
+        // ==========================================
+        // 🚀 IIT EXPERT FIX: SECURE QR CODE GENERATOR ENGINE
+        // ==========================================
+        document.getElementById('generateQrBtn').addEventListener('click', (e) => {
+            e.preventDefault(); // Stop form submission behavior
+            
+            const upiId = document.getElementById('dynamicUpiDisplay').innerText.trim();
+            const amount = selectedPrice; // 🚀 Extracted strictly from server-fetched plan
+
+            // 🛡️ Master Shield: Hacker/Failsafe Check
+            if (upiId === "Loading..." || upiId === "Unavailable" || upiId === "Network Error" || !upiId) {
+                showCustomAlert("Secure Engine: Live UPI ID is not loaded yet. Please wait.");
+                return;
+            }
+            if (!amount || amount <= 0) {
+                showCustomAlert("Secure Engine: Please select a valid plan first.");
+                return;
+            }
+
+            // 1. Generate Universal UPI URI (Works universally on GPay, Paytm, PhonePe, Navi)
+            const upiUri = `upi://pay?pa=${upiId}&pn=BuildMoney&am=${amount}&cu=INR`;
+            const encodedUri = encodeURIComponent(upiUri);
+            
+            // 2. 🚀 IIT EXPERT FIX: Modern High-Performance QR Engine (Bypasses all browser blocks)
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodedUri}&margin=0`;
+
+            // 3. Render Premium Cancelable Modal (Matched with Screenshot)
+            const modalHtml = `
+                <div id="qrModalOverlay" class="custom-alert-overlay" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 9999;">
+                    <div class="custom-alert-box" style="width: 90%; max-width: 330px; text-align: center; padding: 24px; border-radius: 20px; background: #ffffff; box-shadow: 0 10px 40px rgba(0,0,0,0.15); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                        
+                        <!-- Premium Clean Header -->
+                        <h3 style="margin: 0 0 20px 0; color: #0f172a; font-size: 17px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span class="material-symbols-rounded" style="color: #1b6e35; font-size: 20px;">qr_code_scanner</span> Scan & Pay
+                        </h3>
+                        
+                        <!-- Clean Dashed QR Container -->
+                        <div style="background: #ffffff; padding: 10px; border-radius: 16px; border: 1.5px dashed #cbd5e1; margin: 0 auto 20px auto; width: fit-content; position: relative; display: flex; align-items: center; justify-content: center; min-width: 200px; min-height: 200px;">
+                            
+                            <!-- Native CSS Loader while image securely fetches -->
+                            <div id="qrLoader" style="position: absolute; color: #cbd5e1; z-index: 1;">
+                                <span class="material-symbols-rounded" style="font-size: 32px; animation: spin 1s linear infinite;">sync</span>
+                            </div>
+                            
+                            <!-- 🚀 IIT EXPERT FIX: Bulletproof Image Loading Engine -->
+                            <img src="${qrImageUrl}" alt="Secure UPI QR Code" style="width: 200px; height: 200px; border-radius: 10px; position: relative; z-index: 2; background: white; display: none;" onload="this.style.display='block'; document.getElementById('qrLoader').style.display='none';" onerror="this.style.display='none'; document.getElementById('qrLoader').innerHTML='<span style=\\'color:#e11d48; font-size:12px; font-weight:bold;\\'>Error Loading QR</span>';">
+                        
+                        </div>
+                        
+                        <!-- Typography perfectly matched with design -->
+                        <p style="font-size: 12px; color: #64748b; margin: 0 0 6px 0; font-weight: 500;">Paying securely to: <strong style="color: #0f172a;">${upiId}</strong></p>
+                        <p style="font-size: 20px; font-weight: 900; color: #1b6e35; margin: 0 0 24px 0;">Amount: ₹${amount}</p>
+                        
+                        <!-- Full Width Premium Button -->
+                        <button onclick="document.getElementById('qrModalOverlay').remove()" style="width: 100%; padding: 14px; border: none; background: #f1f5f9; color: #334155; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 14px; transition: background 0.2s;" onmousedown="this.style.background='#e2e8f0'" onmouseup="this.style.background='#f1f5f9'">
+                            Close Scanner
+                        </button>
+                        
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        });
 
         // 🚀 IIT EXPERT: Base64 Media Engine & Live Preview
         const fileInput = document.getElementById('screenshotFile');
@@ -1283,10 +1810,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="glass-badge">Live</div>
                     </div>
                     
-                    <!-- Queries -->
-                    <div class="admin-card card-queries" onclick="showCustomAlert('Queries UI Connection Pending...')">
+                    <!-- 🚀 IIT EXPERT: Live Queries Chat Engine -->
+                    <div class="admin-card card-queries" onclick="navigateTo('adminQueries')">
                         <span class="material-symbols-rounded">forum</span>
                         <h4>Queries</h4>
+                        <div class="glass-badge">Live Chat</div>
                     </div>
                 </div>
             </div>
