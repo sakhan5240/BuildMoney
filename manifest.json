@@ -1,27 +1,24 @@
 {
-  "id": "/buildmoney/",
-  "name": "Build Money App",
+  "name": "Build Money",
   "short_name": "BuildMoney",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
-  "orientation": "portrait-primary",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "description": "Premium Money Earning App.",
+  "theme_color": "#115e59",
+  "orientation": "portrait-primary",
+  "description": "Your Ultimate Testing & Wallet Portal",
   "icons": [
     {
       "src": "./icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "./icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
