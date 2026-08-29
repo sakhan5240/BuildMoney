@@ -1,7 +1,8 @@
 {
   "name": "Build Money",
   "short_name": "BuildMoney",
-  "start_url": "/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#115e59",
