@@ -1516,15 +1516,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (result.status === "success") {
                     showCustomAlert("Deposit Request Submitted Successfully!");
-                    navigateTo('dashboard'); // Redirect auto on success
+                    submitBtn.innerHTML = "Request Locked"; // Button safely visually locked
+                    setTimeout(() => navigateTo('dashboard'), 1500); // Failsafe redirect with minor delay
                 } else {
                     throw new Error(result.message);
                 }
             } catch (err) {
-                submitBtn.innerHTML = "Submit Request";
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = "1";
-                showCustomAlert("Upload Failed: " + err.message);
+                // 🚀 IIT EXPERT FIX: Smart Failsafe for Single Deposit Policy
+                if (err.message === "One user ~ One Deposit Only") {
+                    submitBtn.innerHTML = "Already Submitted";
+                    // 🚀 We DO NOT re-enable the button. Strict block!
+                    showCustomAlert("One user ~ One Deposit Only");
+                } else {
+                    submitBtn.innerHTML = "Submit Request";
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = "1";
+                    showCustomAlert("Upload Failed: " + err.message);
+                }
             }
         });
     }
