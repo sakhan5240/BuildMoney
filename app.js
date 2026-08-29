@@ -353,12 +353,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
-
     // ==========================================
     // BOTTOM NAVIGATION HELPER (DRY Principle)
     // ==========================================
-    // Yeh function automatically detect karega konsi tab active hai aur icon ko fill kar dega
     function getBottomNavHTML(activeTab) {
         return `
             <div class="bottom-nav">
@@ -395,8 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
     }
-
-
 
     // ==========================================
     // 3. MAIN DASHBOARD SCREEN (Engineered with Live Sync)
@@ -1325,10 +1320,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             if(amountDisplay) amountDisplay.innerText = `₹${plan.price}`; // Null Safe
                         }
                         plansHtml += `
+                        <!-- 🚀 IIT EXPERT FIX: Removed Rogue </sp> and fixed paragraph tag -->
                         <div class="plan-card-item ${isActive}" data-price="${plan.price}" data-plan="${plan.name}">
                             <div class="plan-info">
                                 <h4>${plan.name}</h4>
-                                <p class="text-green font-bold">Profit: ₹${plan.profit}/Quiz</sp>
+                                <p class="text-green font-bold">Profit: ₹${plan.profit}/Quiz</p>
                             </div>
                             <div class="plan-price">₹${plan.price}</div>
                         </div>`;
@@ -2427,72 +2423,99 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 150); // 150ms buffer taaki browser HTML render kar le
     });
 
+
     // ==========================================
-    // 4. PWA ENGINE: INSTALLER & OFFLINE DETECTOR
+    // 4. PREMIUM PWA ENGINE: MANDATORY INSTALL WALL
     // ==========================================
     
-    // 🚀 1. Register Master Service Worker (Compulsory for Installation)
+    // 🚀 1. Register Master Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./firebase-messaging-sw.js')
-                .then((reg) => console.log('IIT Expert PWA: Native Engine Activated!'))
+                .then(() => console.log('IIT Expert PWA: Native Engine Activated!'))
                 .catch((err) => console.error('PWA Engine Failed:', err));
         });
     }
 
-    // 🚀 2. Premium Smart Install Banner Logic
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault(); // Stop default browser mini-info bar
-        deferredPrompt = e;
-        showInstallBanner(); // Trigger our custom premium banner
-    });
+    // 🚀 2. STRICT MODE: Force Native App Installation (Browser Bypass Killer)
+    // CSS level pe detect karta hai ki app PWA mode mein khula hai ya Browser URL mein
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://');
 
-    function showInstallBanner() {
-        if (document.getElementById('pwa-install-banner')) return;
-
-        const banner = document.createElement('div');
-        banner.id = 'pwa-install-banner';
-        // Premium Floating Dark Banner UI
-        banner.innerHTML = `
-            <div style="position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); color: white; padding: 12px 18px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <img src="./icon-192x192.png" style="width: 36px; height: 36px; border-radius: 8px;">
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-size: 14px; font-weight: 700;">Install Build Money</span>
-                        <span style="font-size: 11px; color: #cbd5e1;">For faster & native experience</span>
-                    </div>
+    if (!isStandalone) {
+        // Step A: Hide the actual app entirely from browser users
+        document.getElementById('app-container').style.display = 'none';
+        
+        // Step B: Render Premium Non-Closeable Full Screen UI
+        const installWall = document.createElement('div');
+        installWall.innerHTML = `
+            <div style="position: fixed; top:0; left:0; width: 100%; height: 100vh; background: #f8fafc; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 25px; text-align: center;">
+                
+                <!-- Premium Floating App Icon -->
+                <div style="width: 110px; height: 110px; background: #ffffff; border-radius: 28px; box-shadow: 0 12px 30px rgba(27, 110, 53, 0.25); margin-bottom: 25px; display: flex; justify-content: center; align-items: center; padding: 6px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                    <img src="./icon-512x512.png" style="width: 100%; height: 100%; border-radius: 22px; object-fit: cover;">
                 </div>
-                <button id="pwaInstallBtn" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; transition: transform 0.1s;">INSTALL</button>
+                
+                <h2 style="font-size: 28px; font-weight: 900; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.5px;">Build Money</h2>
+                <p style="font-size: 15px; color: #64748b; font-weight: 600; margin-bottom: 40px; max-width: 300px; line-height: 1.5;">To ensure a 100% secure and premium experience, please install our native app to continue.</p>
+
+                <!-- Action Button -->
+                <button id="strictInstallBtn" style="background: linear-gradient(135deg, #1b6e35, #10b981); color: white; border: none; padding: 18px 24px; width: 100%; max-width: 300px; border-radius: 16px; font-size: 16px; font-weight: 800; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 8px 20px rgba(27, 110, 53, 0.3); cursor: pointer; transition: transform 0.2s;" onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform='scale(1)'">
+                    <span class="material-symbols-rounded" style="font-size: 24px;">download</span> Install App Now
+                </button>
+                
+                <!-- iOS Failsafe Instruction (Because Apple blocks auto-prompts) -->
+                <div id="iosInstructions" style="display: none; flex-direction: column; align-items: center; margin-top: 20px; background: #ffffff; padding: 16px; border-radius: 16px; border: 1.5px dashed #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+                    <p style="font-size: 14px; color: #0f172a; font-weight: 800; margin: 0 0 8px 0;">iOS Installation:</p>
+                    <p style="font-size: 13px; color: #64748b; font-weight: 600; margin: 0;">Tap <span class="material-symbols-rounded" style="font-size: 16px; vertical-align: middle; color: #3b82f6;">ios_share</span> Share icon below and select <strong style="color: #0f172a;">"Add to Home Screen"</strong>.</p>
+                </div>
+
             </div>
         `;
-        document.body.appendChild(banner);
+        document.body.appendChild(installWall);
 
-        const installBtn = document.getElementById('pwaInstallBtn');
-        installBtn.addEventListener('mousedown', () => installBtn.style.transform = 'scale(0.95)');
-        
-        installBtn.addEventListener('click', async () => {
-            banner.remove(); // Remove banner instantly
+        // Apple Device Detection
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const btn = document.getElementById('strictInstallBtn');
+        const iosMsg = document.getElementById('iosInstructions');
+
+        if (isIOS) {
+            btn.style.display = 'none'; // Hide native install button for Apple
+            iosMsg.style.display = 'flex'; // Show Apple manual instructions
+        }
+
+        // 🚀 Native App Installation Logic
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e; // Chrome ready hone par prompt hold karta hai
+        });
+
+        btn.addEventListener('click', async () => {
             if (deferredPrompt) {
-                deferredPrompt.prompt(); // Show native browser install prompt
+                deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
-                    console.log('User installed the app');
+                    btn.innerHTML = `<span class="material-symbols-rounded">sync</span> Installing...`;
+                    btn.style.background = "#94a3b8";
+                    btn.style.boxShadow = "none";
                 }
                 deferredPrompt = null;
+            } else {
+                // Failsafe agar user page load hone se pehle hi click kar de
+                showCustomAlert("Preparing installation engine... Please wait 2 seconds and tap again.");
             }
+        });
+
+        // 🚀 Installation Success Action
+        window.addEventListener('appinstalled', () => {
+            btn.innerHTML = `<span class="material-symbols-rounded">done_all</span> Installed Successfully!`;
+            btn.style.background = "#1b6e35";
+            showCustomAlert("App Installed Successfully! Please close this browser tab and open 'Build Money' App from your phone's home screen.");
         });
     }
 
-    // Success Listener
-    window.addEventListener('appinstalled', () => {
-        deferredPrompt = null;
-        showCustomAlert("Congratulations! App is successfully installed.");
-    });
-
-    // 🚀 3. Real-Time Offline/Online Monitor
+    // 🚀 3. Real-Time Offline/Online Monitor (Works inside App)
     window.addEventListener('offline', () => { showCustomAlert("You are offline. Please check your internet connection."); });
     window.addEventListener('online', () => { showCustomAlert("Back online! Connection restored."); });
-    if (!navigator.onLine) { showCustomAlert("You are currently offline. Some features may not work."); }
 
 });
