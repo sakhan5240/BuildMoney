@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // MASTER GOOGLE SCRIPT URL (Global Engine Scope)
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwM3C-sSFqYSIctxYKotElsdVtiU1zi_E7rdXskalfN4w5wClSqeyHw7hQwA2P11kL3kw/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXzWk1vpVCyfw0XB18hB9FUb16paXvs_gQUxDN7hAxfeaRJhhp9TEzYOAyFhpDr-bodw/exec";
 
     // ==========================================
     // PREMIUM CUSTOM ALERT FUNCTION
@@ -80,18 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (screen === 'register') renderRegisterScreen();
         else if (screen === 'forgot') renderForgotPasswordScreen();
         else if (screen === 'dashboard') renderDashboardScreen();
-        else if (screen === 'submit') renderSubmitScreen();
+        else if (screen === 'submit') renderSubmitScreen(); // 🚀 Activated
         else if (screen === 'team') renderTeamScreen();
         else if (screen === 'wallet') renderWalletScreen();
-        else if (screen === 'withdraw') renderWithdrawScreen(); // 🚀 Withdraw Portal Route
+        else if (screen === 'withdraw') renderWithdrawScreen(); 
         else if (screen === 'deposit') renderDepositScreen(); 
         else if (screen === 'support') renderSupportScreen();
-        else if (screen === 'adminLogin') renderAdminLoginScreen(); // 🚀 Advanced Admin Engine Route
+        else if (screen === 'adminLogin') renderAdminLoginScreen(); 
         else if (screen === 'adminDashboard') renderAdminDashboardScreen(); 
         else if (screen === 'adminDepositRequests') renderAdminDepositRequestsScreen(); 
         else if (screen === 'adminWithdrawRequests') renderAdminWithdrawRequestsScreen(); 
-        else if (screen === 'adminQueries') renderAdminQueriesScreen(); // 🚀 Premium Queries List Route
-        else if (screen === 'adminChat') renderAdminChatScreen(); // 🚀 Admin Chat Engine Route
+        else if (screen === 'adminSubmitRequests') renderAdminSubmitRequestsScreen(); // 🚀 Activated
+        else if (screen === 'adminQueries') renderAdminQueriesScreen(); 
+        else if (screen === 'adminChat') renderAdminChatScreen(); 
         else renderLoginScreen();
     };
 
@@ -699,29 +700,374 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+
     // ==========================================
-    // 4. UPCOMING TAB SCREENS (Submit, Team, Wallet, Support)
+    // 🚀 PREMIUM SUBMIT WORK SCREEN (Dual-Tab & Max 1 Engine)
     // ==========================================
-    
-    // Generic function format banaya gaya hai upcoming screens ke liye
-    function generateUpcomingScreen(title, icon) {
-        return `
-            <div class="dashboard-layout" style="animation: fadeIn 0.3s ease-in-out;">
-                <div class="header-top">
-                    <div class="header-text"><h2>${title}</h2></div>
+    function renderSubmitScreen() {
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 1000;">
+                <div class="nav-title" style="flex-grow: 1; text-align: center; font-size: 20px; font-weight: 800; color: #0f172a;">Submit Your Work</div>
+            </div>
+
+            <div class="screen" style="padding-bottom: 100px; background: #f8fafc; min-height: 100vh;">
+                
+                <div id="submitUploadSection" style="animation: fadeIn 0.3s ease-out;">
+                    <div style="background: linear-gradient(135deg, #1b6e35, #124d1a); padding: 18px; border-radius: 16px; margin-bottom: 20px; color: white; box-shadow: 0 8px 20px rgba(27, 110, 53, 0.2);">
+                        <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 6px;"><span class="material-symbols-rounded" style="font-size: 18px;">info</span> Daily Rule</h4>
+                        <p style="margin: 0; font-size: 13px; font-weight: 500; opacity: 0.9;">Only 1 submission allowed per day. Profit will automatically add to your wallet after approval.</p>
+                    </div>
+
+                    <!-- Live Image Preview Box -->
+                    <label class="screenshot-upload-box" for="submitScreenshotFile" id="submitImagePreviewBox" style="background: #ffffff; border: 2px dashed #1b6e35; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                        <span class="material-symbols-outlined text-green" style="font-size: 36px; margin-bottom: 8px;" id="submitUploadIcon">note_add</span>
+                        <p class="text-green font-bold" id="submitUploadText" style="font-size: 14px;">Tap to upload written page</p>
+                        <input type="file" id="submitScreenshotFile" accept="image/*" style="display: none;">
+                    </label>
+
+                    <button class="btn-primary" id="workSubmitBtn" style="margin-top: 10px; padding: 16px; box-shadow: 0 6px 15px rgba(27, 110, 53, 0.25);">Submit Page</button>
                 </div>
-                <div class="plan-card text-center" style="margin-top: 60px;">
-                    <span class="material-symbols-rounded text-green" style="font-size: 50px; margin-bottom: 15px;">${icon}</span>
-                    <h3>Upcoming Feature</h3>
-                    <p>Bhai, yeh screen ka backend jaldi hi connect hoga.</p>
+
+                <div id="alreadySubmittedSection" style="display: none; background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: 16px; padding: 25px 20px; text-align: center; margin-bottom: 20px; animation: popIn 0.3s ease-out;">
+                    <span class="material-symbols-rounded" style="font-size: 48px; color: #f59e0b; margin-bottom: 10px;">task_alt</span>
+                    <h3 style="color: #b45309; font-size: 18px; margin: 0 0 8px 0; font-weight: 900;">Already Submitted</h3>
+                    <p style="color: #d97706; font-size: 13px; font-weight: 600; margin: 0;">You have successfully submitted your work for today. Please come back tomorrow.</p>
+                </div>
+
+                <!-- Dual-Tab History Engine -->
+                <div style="display: flex; gap: 10px; margin-top: 30px; margin-bottom: 20px; background: #e2e8f0; padding: 6px; border-radius: 16px;">
+                    <button id="tabPendingS" onclick="switchSubmitTab('Pending')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #ffffff; color: #1b6e35; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">Pending</button>
+                    <button id="tabApprovedS" onclick="switchSubmitTab('Approved')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: transparent; color: #64748b; font-weight: 800; cursor: pointer; transition: 0.2s;">Processed</button>
+                </div>
+                
+                <div id="submitLoadingIndicator" class="text-center" style="color: #64748b; margin-top: 20px;">
+                    <span class="material-symbols-rounded" style="animation: spin 1s linear infinite; font-size: 28px; color: #1b6e35;">sync</span>
+                </div>
+
+                <div id="submitHistoryList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+            ${getBottomNavHTML('submit')}
+        `;
+
+        let base64String = null; let mimeType = null; let fileName = null;
+        window.currentSubmitTab = 'Pending';
+        window.submitDataCache = [];
+
+        // Image Engine
+        document.getElementById('submitScreenshotFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    base64String = event.target.result.split(',')[1];
+                    mimeType = file.type; fileName = file.name;
+                    const previewBox = document.getElementById('submitImagePreviewBox');
+                    previewBox.style.backgroundImage = `url(${event.target.result})`;
+                    previewBox.style.backgroundSize = 'cover'; previewBox.style.backgroundPosition = 'center'; previewBox.style.borderStyle = 'solid';
+                    document.getElementById('submitUploadText').style.display = 'none';
+                    document.getElementById('submitUploadIcon').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        const user = firebase.auth().currentUser;
+        if(user) fetchSubmitHistory(user.email);
+
+        async function fetchSubmitHistory(email) {
+            try {
+                let res = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'getUserProfile', email: email }) });
+                let data = await res.json();
+                document.getElementById('submitLoadingIndicator').style.display = 'none';
+
+                if (data.status === "success") {
+                    if (data.hasSubmittedToday) {
+                        document.getElementById('submitUploadSection').style.display = 'none';
+                        document.getElementById('alreadySubmittedSection').style.display = 'block';
+                    }
+                    let sArr = data.submitHistory || [];
+                    sArr.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    window.submitDataCache = sArr;
+                    renderSubmitList();
+                }
+            } catch(e) {}
+        }
+
+        window.switchSubmitTab = function(tab) {
+            window.currentSubmitTab = tab;
+            document.getElementById('tabPendingS').style.background = tab === 'Pending' ? '#ffffff' : 'transparent';
+            document.getElementById('tabPendingS').style.color = tab === 'Pending' ? '#1b6e35' : '#64748b';
+            document.getElementById('tabPendingS').style.boxShadow = tab === 'Pending' ? '0 4px 10px rgba(0,0,0,0.05)' : 'none';
+            document.getElementById('tabApprovedS').style.background = tab === 'Approved' ? '#ffffff' : 'transparent';
+            document.getElementById('tabApprovedS').style.color = tab === 'Approved' ? '#1b6e35' : '#64748b';
+            document.getElementById('tabApprovedS').style.boxShadow = tab === 'Approved' ? '0 4px 10px rgba(0,0,0,0.05)' : 'none';
+            renderSubmitList();
+        }
+
+        window.renderSubmitList = function() {
+            const listEl = document.getElementById('submitHistoryList');
+            const dataArr = window.submitDataCache.filter(item => 
+                window.currentSubmitTab === 'Pending' ? item.status === 'Pending' : (item.status === 'Approved' || item.status === 'Rejected')
+            );
+
+            if (dataArr.length === 0) {
+                listEl.innerHTML = `<div style="background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 25px 20px; text-align: center;"><p style="font-size: 13px; font-weight: 800; color: #64748b; margin: 0;">No ${window.currentSubmitTab} records found.</p></div>`;
+                return;
+            }
+
+            let htmlBuffer = "";
+            dataArr.forEach(item => {
+                let displayDate = item.timestamp;
+                try { const d = new Date(item.timestamp); if(!isNaN(d)) displayDate = d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true }); } catch(e){}
+
+                let badgeHtml = item.status === "Approved" ? `<span style="background: #dcfce7; color: #059669; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;"><span class="material-symbols-rounded" style="font-size: 14px;">check_circle</span> APPROVED</span>` : 
+                                item.status === "Rejected" ? `<span style="background: #ffe4e6; color: #e11d48; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;"><span class="material-symbols-rounded" style="font-size: 14px;">cancel</span> REJECTED</span>` :
+                                `<span style="background: #fff3e0; color: #ea580c; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;"><span class="material-symbols-rounded" style="font-size: 14px;">schedule</span> PENDING</span>`;
+
+                htmlBuffer += `
+                <div style="background: #ffffff; border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px; flex-grow: 1; overflow: hidden;">
+                        <div style="width: 42px; height: 42px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #e2e8f0;">
+                            <span class="material-symbols-rounded" style="font-size: 24px; color: #64748b;">description</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <span style="font-size: 15px; font-weight: 800; color: #0f172a;">Daily Task</span>
+                            <span style="font-size: 11px; font-weight: 600; color: #94a3b8;">${displayDate}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                        <span style="font-size: 16px; font-weight: 900; color: #10b981; letter-spacing: 0.5px;">+₹${item.profit}</span>
+                        ${badgeHtml}
+                    </div>
+                </div>`;
+            });
+            listEl.innerHTML = htmlBuffer;
+        }
+
+        // Upload Request Logic
+        const submitBtn = document.getElementById('workSubmitBtn');
+        submitBtn.addEventListener('click', async () => {
+            if (!base64String) return showCustomAlert("Kindly upload the page photo first.");
+            if(!user) return showCustomAlert("Authentication Error! Please login again.");
+
+            submitBtn.innerHTML = "Uploading safely...";
+            submitBtn.disabled = true; submitBtn.style.opacity = "0.7";
+
+            try {
+                let res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'submitWork', email: user.email, imageBase64: base64String, mimeType: mimeType, imageName: fileName })
+                });
+                let result = await res.json();
+                if (result.status === "success") {
+                    showCustomAlert("Work Submitted! Profit will be added after admin review.");
+                    submitBtn.innerHTML = "Locked";
+                    document.getElementById('submitUploadSection').style.display = 'none';
+                    document.getElementById('alreadySubmittedSection').style.display = 'block';
+                    fetchSubmitHistory(user.email); // Auto Refresh UI
+                } else throw new Error(result.message);
+            } catch (err) {
+                submitBtn.innerHTML = "Submit Page";
+                submitBtn.disabled = false; submitBtn.style.opacity = "1";
+                showCustomAlert(err.message);
+            }
+        });
+    }
+
+    // 🚀 ADMIN MULTICOLOR GRID DASHBOARD UPDATE
+    function renderAdminDashboardScreen() {
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background-color: #0f172a; border-bottom: none;">
+                <button class="back-btn" id="adminLogoutBtn" style="color: #ffffff;">
+                    <span class="material-symbols-outlined">logout</span>
+                </button>
+                <div class="nav-title text-center" style="font-size: 20px; color: #ffffff;">Admin Engine</div>
+                <div style="width: 24px;"></div>
+            </div>
+            
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1.5rem;">
+                <div class="admin-header" style="margin-bottom: 25px;">
+                    <h2 style="font-size: 26px; color: #0f172a; margin-bottom: 4px;">Dashboard</h2>
+                    <p style="font-size: 14px; color: #64748b;">Overview & Platform Management</p>
+                </div>
+                
+                <div style="background: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 4px; text-transform: uppercase;">Current Live UPI ID</p>
+                        <h3 id="adminCurrentUpi" style="font-size: 16px; font-weight: 800; color: #1b6e35; margin: 0;">Loading...</h3>
+                    </div>
+                    <button onclick="openUpiUpdateModal()" style="background: #eff6ff; color: #2563eb; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer;">Change</button>
+                </div>
+                
+                <div class="admin-grid">
+                    <!-- Deposit Request (Priority - Full Width) -->
+                    <div class="admin-card card-deposit" onclick="navigateTo('adminDepositRequests')">
+                        <span class="material-symbols-rounded">payments</span>
+                        <h4>Deposit Request</h4>
+                        <div class="glass-badge">Live</div>
+                    </div>
+
+                    <!-- 🚀 IIT EXPERT FIX: Withdraw Request UI Updated -->
+                    <div class="admin-card card-withdraw" onclick="navigateTo('adminWithdrawRequests')">
+                        <span class="material-symbols-rounded">account_balance</span>
+                        <h4>Withdraw Request</h4>
+                        <div class="glass-badge">Live</div>
+                    </div>
+                    
+                    <!-- 🚀 IIT EXPERT FIX: Submits Management Card -->
+                    <div class="admin-card card-submit" onclick="navigateTo('adminSubmitRequests')">
+                        <span class="material-symbols-rounded">description</span>
+                        <h4>Page Submits</h4>
+                        <div class="glass-badge">Tasks</div>
+                    </div>
+                    
+                    <!-- Total Accounts Activated -->
+                    <div class="admin-card card-accounts" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); cursor: default;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <span class="material-symbols-rounded">verified_user</span>
+                            <h2 id="liveActiveCount" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1; color: white;">-</h2>
+                        </div>
+                        <h4 style="margin-top: 15px;">Active Accounts</h4>
+                    </div>
+
+                    <div class="admin-card card-queries" onclick="navigateTo('adminQueries')">
+                        <span class="material-symbols-rounded">forum</span>
+                        <h4>Queries</h4>
+                        <div class="glass-badge">Chat</div>
+                    </div>
+
+                    <!-- Total Users -->
+                    <div class="admin-card card-accounts" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); cursor: default;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <span class="material-symbols-rounded">group_add</span>
+                            <h2 id="liveUsersCount" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1; color: white;">-</h2>
+                        </div>
+                        <h4 style="margin-top: 15px;">Total Users</h4>
+                    </div>
                 </div>
             </div>
         `;
+
+        document.getElementById('adminLogoutBtn').addEventListener('click', () => navigateTo('dashboard', false));
+        fetchAdminDashboardStats(); fetchAdminLiveUpi(); 
     }
 
-    function renderSubmitScreen() {
-        appContainer.innerHTML = generateUpcomingScreen("Submit Work", "description") + getBottomNavHTML('submit');
+    // ==========================================
+    // 🚀 ADMIN: SUBMIT REQUESTS LIST SCREEN
+    // ==========================================
+    function renderAdminSubmitRequestsScreen() {
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+                <button class="back-btn" onclick="navigateTo('adminDashboard')"><span class="material-symbols-outlined">arrow_back</span></button>
+                <div class="nav-title" style="font-size: 18px; flex-grow: 1; text-align: left; font-weight: 800;">Pending Submits</div>
+                <div style="width: 24px;"></div>
+            </div>
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1rem;">
+                <div id="subLoadingIndicator" class="text-center" style="color: #64748b; margin-top: 40px;">
+                    <span class="material-symbols-outlined" style="animation: spin 1s linear infinite; font-size: 36px; color: #10b981;">refresh</span>
+                    <p style="margin-top: 10px; font-weight: 500;">Fetching secure tasks...</p>
+                </div>
+                <div id="adminSubmitRequestsList" style="display: flex; flex-direction: column; gap: 12px; padding-bottom: 30px;"></div>
+            </div>
+        `;
+        fetchAdminSubmitRequests();
     }
+
+    async function fetchAdminSubmitRequests() {
+        const listContainer = document.getElementById('adminSubmitRequestsList');
+        const loader = document.getElementById('subLoadingIndicator');
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getSubmitRequests', adminToken: sessionStorage.getItem('buildMoneyAdminToken') })
+            });
+            let result = await res.json();
+            loader.style.display = 'none';
+
+            if (result.status === "success") {
+                let reqData = result.data;
+                if (reqData.length === 0) {
+                    listContainer.innerHTML = `<p class="empty-state text-center" style="margin-top:20px;">No pending submissions.</p>`;
+                    return;
+                }
+                reqData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)); // Oldest first for fair review
+                window.adminSubmitData = reqData; 
+
+                listContainer.innerHTML = reqData.map((req, index) => {
+                    let displayDate = req.timestamp;
+                    try { const d = new Date(req.timestamp); if(!isNaN(d)) displayDate = d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true }); } catch(e){}
+
+                    return `
+                    <div style="background: #ffffff; border-radius: 16px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                            <div style="display: flex; flex-direction: column;">
+                                <h4 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0;">${req.name}</h4>
+                                <p style="font-size: 12px; font-weight: 500; color: #64748b; margin: 0 0 6px 0;">${req.email}</p>
+                                <div style="font-size: 11px; font-weight: 500; color: #94a3b8; display: flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined" style="font-size: 14px;">schedule</span> ${displayDate}</div>
+                            </div>
+                            <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
+                                <div style="font-size: 16px; font-weight: 900; color: #10b981; margin-bottom: 6px;">+₹${req.expectedProfit}</div>
+                                <span style="background: #fff3e0; color: #ea580c; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;"><span class="material-symbols-rounded" style="font-size: 14px;">schedule</span> PENDING</span>
+                            </div>
+                        </div>
+                        <button onclick="openSubmitActionModal(${index})" style="width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; color: #1e293b; font-weight: 700; font-size: 13px; cursor: pointer;">View Task Details</button>
+                    </div>`;
+                }).join('');
+            } else throw new Error(result.message);
+        } catch (error) { loader.innerHTML = `<p style="color: #e11d48;">Error: ${error.message}</p>`; }
+    }
+
+    // 🚀 Admin Failsafe Action Modal
+    window.openSubmitActionModal = function(index) {
+        const req = window.adminSubmitData[index];
+        const modalHtml = `
+            <div id="adminSubmitModalOverlay" class="custom-alert-overlay" style="display: flex;">
+                <div class="custom-alert-box" style="width: 90%; max-width: 400px; text-align: left; padding: 20px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                        <span class="material-symbols-rounded" style="color: #10b981; font-size: 24px; margin-right: 8px;">fact_check</span>
+                        <h3 style="color: #0f172a; font-size: 18px; margin: 0;">Task Verification</h3>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #cbd5e1;">
+                        <p style="margin-bottom: 8px; font-size: 14px;"><span style="color: #64748b;">Name:</span> <strong style="color: #0f172a; float: right;">${req.name}</strong></p>
+                        <p style="margin-bottom: 8px; font-size: 14px;"><span style="color: #64748b;">Profit Add:</span> <strong style="color: #10b981; float: right; font-size: 16px;">+₹${req.expectedProfit}</strong></p>
+                    </div>
+                    
+                    <a href="${req.screenshot}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 6px; background: #eff6ff; color: #2563eb; padding: 14px; border-radius: 12px; margin-bottom: 20px; font-weight: 800; font-size: 14px; text-decoration: none; border: 1px solid #bfdbfe;">
+                        <span class="material-symbols-outlined">open_in_new</span> View Submitted Page
+                    </a>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button id="rejectTaskBtn" onclick="processAdminSubmit(${req.rowNumber}, 'Reject')" style="flex: 1; padding: 12px; border: none; background: #ffe4e6; color: #e11d48; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 14px;">Reject</button>
+                        <button id="approveTaskBtn" onclick="processAdminSubmit(${req.rowNumber}, 'Approve')" style="flex: 1; padding: 12px; border: none; background: #10b981; color: white; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 14px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);">Approve</button>
+                    </div>
+                    <button onclick="document.getElementById('adminSubmitModalOverlay').remove()" style="width: 100%; margin-top: 10px; padding: 12px; border: none; background: transparent; color: #64748b; cursor: pointer; font-weight: 800;">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    };
+
+    window.processAdminSubmit = async function(rowNumber, action) {
+        document.getElementById('approveTaskBtn').disabled = true; document.getElementById('rejectTaskBtn').disabled = true;
+        document.getElementById('approveTaskBtn').innerText = "Wait...";
+
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'processSubmit', rowNumber: rowNumber, submitAction: action, adminToken: sessionStorage.getItem('buildMoneyAdminToken') })
+            });
+            let result = await res.json();
+            if (result.status === "success") {
+                showCustomAlert("Success! Action completed.");
+                document.getElementById('adminSubmitModalOverlay').remove();
+                fetchAdminSubmitRequests(); // Auto refresh list
+            } else throw new Error(result.message);
+        } catch(e) {
+            showCustomAlert("Error: " + e.message);
+            document.getElementById('adminSubmitModalOverlay').remove();
+        }
+    };
 
     // ==========================================
     // 🚀 PREMIUM 5-LEVEL TEAM & REWARD ENGINE UI
