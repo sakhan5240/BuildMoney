@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // MASTER GOOGLE SCRIPT URL (Global Engine Scope)
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxUJ7qrPpUrp7hr9DxSZUYXoauAD6iuuLSVedux6AFH0TEtjwT1H5mDrsMgZ60dwrFGA/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwM3C-sSFqYSIctxYKotElsdVtiU1zi_E7rdXskalfN4w5wClSqeyHw7hQwA2P11kL3kw/exec";
 
     // ==========================================
     // PREMIUM CUSTOM ALERT FUNCTION
@@ -883,8 +883,197 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ==========================================
+    // 🚀 PREMIUM WALLET & TRANSACTIONS ENGINE
+    // ==========================================
     function renderWalletScreen() {
-        appContainer.innerHTML = generateUpcomingScreen("Wallet & Transactions", "account_balance_wallet") + getBottomNavHTML('wallet');
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 1000;">
+                <div class="nav-title" style="flex-grow: 1; text-align: center; font-size: 20px; font-weight: 800; color: #0f172a;">Wallet & History</div>
+            </div>
+
+            <div class="screen" style="background: #f8fafc; min-height: 100vh; padding-top: 20px; padding-bottom: 100px;">
+                
+                <!-- Premium Wallet Balance Card (Animated) -->
+                <div style="background: linear-gradient(135deg, #1b6e35 0%, #124d1a 100%); border-radius: 20px; padding: 25px 20px; color: white; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(27, 110, 53, 0.25); position: relative; overflow: hidden;">
+                    <!-- Hardware Accelerated Shine Effect -->
+                    <div style="position: absolute; top: 0; left: -150%; width: 60%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: premiumShine 4s infinite;"></div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; position: relative; z-index: 1;">
+                        <p style="font-size: 14px; opacity: 0.9; margin: 0; font-weight: 600;">Available Balance</p>
+                        <button id="walletEyeToggle" style="background: rgba(255,255,255,0.15); border: none; color: white; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+                            <span class="material-symbols-rounded" id="walletEyeIcon" style="font-size: 18px;">visibility_off</span>
+                        </button>
+                    </div>
+                    <h2 id="mainWalletBalance" data-balance="0" style="font-size: 40px; font-weight: 900; margin: 0; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; z-index: 1;">₹••••••</h2>
+                </div>
+
+                <!-- 🚀 Dual-Tab Segmented Controller -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; background: #e2e8f0; padding: 6px; border-radius: 16px;">
+                    <button id="tabDeposits" onclick="switchWalletTab('Deposits')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #ffffff; color: #1b6e35; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">Deposits</button>
+                    <button id="tabWithdraws" onclick="switchWalletTab('Withdraws')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: transparent; color: #64748b; font-weight: 800; cursor: pointer; transition: 0.2s;">Withdraws</button>
+                </div>
+
+                <div id="walletLoadingIndicator" class="text-center" style="color: #64748b; margin-top: 40px;">
+                    <span class="material-symbols-rounded" style="animation: spin 1s linear infinite; font-size: 32px; color: #1b6e35;">sync</span>
+                    <p style="margin-top: 10px; font-size: 13px; font-weight: 600;">Fetching secure records...</p>
+                </div>
+
+                <div id="walletHistoryList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+            ${getBottomNavHTML('wallet')}
+        `;
+
+        window.currentWalletTab = 'Deposits';
+        window.walletDataCache = { deposits: [], withdraws: [] }; // O(1) Cache Engine to prevent multiple fetch hits
+
+        // Eye Toggle Logic
+        const toggleBtn = document.getElementById('walletEyeToggle');
+        const eyeIcon = document.getElementById('walletEyeIcon');
+        const balDisplay = document.getElementById('mainWalletBalance');
+
+        toggleBtn.addEventListener('click', () => {
+            const realBal = balDisplay.getAttribute('data-balance') || "0";
+            if (eyeIcon.innerText === 'visibility_off') {
+                eyeIcon.innerText = 'visibility';
+                balDisplay.innerText = `₹${realBal}.00`;
+            } else {
+                eyeIcon.innerText = 'visibility_off';
+                balDisplay.innerText = `₹••••••`;
+            }
+        });
+
+        // 🚀 Fetch Logic Trigger
+        const user = firebase.auth().currentUser;
+        if(user) fetchWalletHistory(user.email);
+
+        async function fetchWalletHistory(email) {
+            try {
+                let res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getUserProfile', email: email })
+                });
+                let data = await res.json();
+                
+                document.getElementById('walletLoadingIndicator').style.display = 'none';
+
+                if (data.status === "success") {
+                    // Update Balance Safely
+                    balDisplay.setAttribute('data-balance', data.walletBalance);
+                    if (eyeIcon.innerText === 'visibility') balDisplay.innerText = `₹${data.walletBalance}.00`;
+
+                    // Safe Arrays
+                    let depArr = data.depositHistory || [];
+                    let witArr = data.withdrawHistory || [];
+                    
+                    // Chronological Sort (Newest on top)
+                    depArr.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    witArr.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                    // Cache to window
+                    window.walletDataCache.deposits = depArr;
+                    window.walletDataCache.withdraws = witArr;
+
+                    // Instantly render default tab
+                    renderWalletList();
+                }
+            } catch(e) {
+                document.getElementById('walletLoadingIndicator').innerHTML = `<p style="color:#e11d48; font-size:13px; font-weight: bold;">Network Connection Weak. Please Refresh.</p>`;
+            }
+        }
+    }
+
+    // 🚀 Tab Switcher Engine (Zero Loading Time due to cache)
+    window.switchWalletTab = function(tab) {
+        window.currentWalletTab = tab;
+        document.getElementById('tabDeposits').style.background = tab === 'Deposits' ? '#ffffff' : 'transparent';
+        document.getElementById('tabDeposits').style.color = tab === 'Deposits' ? '#1b6e35' : '#64748b';
+        document.getElementById('tabDeposits').style.boxShadow = tab === 'Deposits' ? '0 4px 10px rgba(0,0,0,0.05)' : 'none';
+        
+        document.getElementById('tabWithdraws').style.background = tab === 'Withdraws' ? '#ffffff' : 'transparent';
+        document.getElementById('tabWithdraws').style.color = tab === 'Withdraws' ? '#1b6e35' : '#64748b';
+        document.getElementById('tabWithdraws').style.boxShadow = tab === 'Withdraws' ? '0 4px 10px rgba(0,0,0,0.05)' : 'none';
+        
+        renderWalletList(); // Re-render from cache instantly
+    }
+
+    // 🚀 Dynamic HTML List Renderer
+    window.renderWalletList = function() {
+        const listEl = document.getElementById('walletHistoryList');
+        const dataArr = window.currentWalletTab === 'Deposits' ? window.walletDataCache.deposits : window.walletDataCache.withdraws;
+
+        if (!dataArr || dataArr.length === 0) {
+            listEl.innerHTML = `
+                <div style="background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 30px 20px; text-align: center; animation: fadeIn 0.2s ease-in-out;">
+                    <span class="material-symbols-rounded" style="font-size: 40px; color: #94a3b8; margin-bottom: 10px;">receipt_long</span>
+                    <p style="font-size: 14px; font-weight: 800; color: #475569; margin: 0;">No ${window.currentWalletTab} Yet</p>
+                    <p style="font-size: 12px; font-weight: 500; color: #94a3b8; margin-top: 4px;">Your records will safely appear here.</p>
+                </div>`;
+            return;
+        }
+
+        let htmlBuffer = "";
+        dataArr.forEach(item => {
+            // 🚀 Failsafe Date Parsing
+            let displayDate = item.timestamp;
+            try {
+                const dateObj = new Date(item.timestamp);
+                if (!isNaN(dateObj.getTime())) {
+                    displayDate = dateObj.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+                }
+            } catch(e) {}
+
+            let badgeHtml = "";
+            let titleText = "";
+            let iconHtml = "";
+
+            // Dynamic logic depends on the current tab
+            if (window.currentWalletTab === 'Deposits') {
+                titleText = item.status === "Bonus" || item.txnId === "DAILY_BONUS" ? "Daily Bonus" : (item.planName || "Plan Deposit");
+                iconHtml = item.status === "Bonus" || item.txnId === "DAILY_BONUS" ? "redeem" : "add_circle";
+                
+                if (item.status === "Bonus" || item.txnId === "DAILY_BONUS") {
+                    badgeHtml = `<span style="background: #e0e7ff; color: #3b82f6; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;"><span class="material-symbols-rounded" style="font-size: 14px;">task_alt</span> CLAIMED</span>`;
+                } else if (item.status === true || item.status === "true") {
+                    badgeHtml = `<span style="background: #dcfce7; color: #059669; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;"><span class="material-symbols-rounded" style="font-size: 14px;">check_circle</span> APPROVED</span>`;
+                } else {
+                    badgeHtml = `<span style="background: #fff3e0; color: #ea580c; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;"><span class="material-symbols-rounded" style="font-size: 14px;">schedule</span> PENDING</span>`;
+                }
+            } else {
+                titleText = item.bankName || "Bank Transfer";
+                iconHtml = "account_balance";
+                
+                if (item.status === "Approved") {
+                    badgeHtml = `<span style="background: #dcfce7; color: #059669; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;"><span class="material-symbols-rounded" style="font-size: 14px;">check_circle</span> APPROVED</span>`;
+                } else {
+                    badgeHtml = `<span style="background: #fff3e0; color: #ea580c; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px;"><span class="material-symbols-rounded" style="font-size: 14px;">schedule</span> PENDING</span>`;
+                }
+            }
+
+            const amountColor = window.currentWalletTab === 'Deposits' ? '#10b981' : '#f43f5e';
+            const sign = window.currentWalletTab === 'Deposits' ? '+' : '-';
+
+            htmlBuffer += `
+            <div style="background: #ffffff; border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1.5px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; animation: fadeIn 0.2s ease-in-out;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-grow: 1; overflow: hidden;">
+                    <div style="width: 42px; height: 42px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #e2e8f0;">
+                        <span class="material-symbols-rounded" style="font-size: 24px; color: #64748b;">${iconHtml}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                        <span style="font-size: 15px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${titleText}</span>
+                        <span style="font-size: 11px; font-weight: 600; color: #94a3b8; display: flex; align-items: center; gap: 4px;">
+                            ${displayDate}
+                        </span>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; margin-left: 10px;">
+                    <span style="font-size: 16px; font-weight: 900; color: ${amountColor}; letter-spacing: 0.5px;">${sign}₹${item.amount}</span>
+                    ${badgeHtml}
+                </div>
+            </div>`;
+        });
+        
+        listEl.innerHTML = htmlBuffer; // Single super-fast DOM write
     }
 
 
