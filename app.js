@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // MASTER GOOGLE SCRIPT URL (Global Engine Scope)
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXzWk1vpVCyfw0XB18hB9FUb16paXvs_gQUxDN7hAxfeaRJhhp9TEzYOAyFhpDr-bodw/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBDW1g-9LxNYCCdehqZiqz-BV_Wie04V4jwCn1YgPTpzkRdDsPJ7E2T7N1SwSDwzUCaQ/exec";
 
     // ==========================================
     // PREMIUM CUSTOM ALERT FUNCTION
@@ -90,8 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (screen === 'adminDashboard') renderAdminDashboardScreen(); 
         else if (screen === 'adminDepositRequests') renderAdminDepositRequestsScreen(); 
         else if (screen === 'adminWithdrawRequests') renderAdminWithdrawRequestsScreen(); 
-        else if (screen === 'adminSubmitRequests') renderAdminSubmitRequestsScreen(); // 🚀 Activated
-        else if (screen === 'adminQueries') renderAdminQueriesScreen(); 
+        else if (screen === 'adminSubmitRequests') renderAdminSubmitRequestsScreen(); 
+        else if (screen === 'adminUsersList') renderAdminUsersListScreen(); // 🚀 Premium Users Route
+        else if (screen === 'adminQueries') renderAdminQueriesScreen();
         else if (screen === 'adminChat') renderAdminChatScreen(); 
         else renderLoginScreen();
     };
@@ -921,8 +922,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="glass-badge">Tasks</div>
                     </div>
                     
-                    <!-- Total Accounts Activated -->
-                    <div class="admin-card card-accounts" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); cursor: default;">
+                    <!-- 🚀 IIT EXPERT FIX: Dynamic Clickable Active Accounts -->
+                    <div class="admin-card card-accounts" onclick="window.adminUsersTabFilter='Active'; navigateTo('adminUsersList');" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); cursor: pointer;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <span class="material-symbols-rounded">verified_user</span>
                             <h2 id="liveActiveCount" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1; color: white;">-</h2>
@@ -936,8 +937,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="glass-badge">Chat</div>
                     </div>
 
-                    <!-- Total Users -->
-                    <div class="admin-card card-accounts" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); cursor: default;">
+                    <!-- 🚀 IIT EXPERT FIX: Dynamic Clickable Total Users -->
+                    <div class="admin-card card-accounts" onclick="window.adminUsersTabFilter='All'; navigateTo('adminUsersList');" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); cursor: pointer;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <span class="material-symbols-rounded">group_add</span>
                             <h2 id="liveUsersCount" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1; color: white;">-</h2>
@@ -951,6 +952,182 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('adminLogoutBtn').addEventListener('click', () => navigateTo('dashboard', false));
         fetchAdminDashboardStats(); fetchAdminLiveUpi(); 
     }
+
+
+    // ==========================================
+    // 🚀 ADMIN USERS DIRECTORY (Dual-Tab UI & Failsafe Router)
+    // ==========================================
+    function renderAdminUsersListScreen() {
+        // Fallback Failsafe: Default parameter
+        if (!window.adminUsersTabFilter) window.adminUsersTabFilter = 'All';
+
+        appContainer.innerHTML = `
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+                <button class="back-btn" id="goBackAdminUsers">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <div class="nav-title" style="font-size: 18px; flex-grow: 1; text-align: left; font-weight: 800;">Users Directory</div>
+                <div style="width: 24px;"></div>
+            </div>
+            
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1rem;">
+                
+                <!-- 🚀 Dual-Tab Segmented Controller -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; padding: 0 4px; background: #e2e8f0; border-radius: 16px; padding: 6px;">
+                    <button id="tabAllUsers" onclick="switchUsersTab('All')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: 0.2s;"></button>
+                    <button id="tabActiveUsers" onclick="switchUsersTab('Active')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: 0.2s;"></button>
+                </div>
+
+                <div id="usersLoadingIndicator" class="text-center" style="color: #64748b; margin-top: 40px;">
+                    <span class="material-symbols-outlined" style="animation: spin 1s linear infinite; font-size: 36px; color: #3b82f6;">refresh</span>
+                    <p style="margin-top: 10px; font-weight: 500;">Fetching secure directory...</p>
+                </div>
+                
+                <div id="adminUsersListContainer" style="display: flex; flex-direction: column; gap: 12px; padding-bottom: 30px;">
+                    <!-- Dynamic List Engine Will Populate Here -->
+                </div>
+            </div>
+        `;
+
+        // Safe Hardware Backpress System
+        document.getElementById('goBackAdminUsers').addEventListener('click', () => {
+            if (window.history.length > 1) { window.history.back(); } 
+            else { navigateTo('adminDashboard', false); }
+        });
+
+        // Initialize UI Tabs Setup
+        switchUsersTab(window.adminUsersTabFilter);
+        
+        // Trigger Engine
+        fetchAdminUsersList();
+    }
+
+    // 🚀 Smooth Segmented Tab Switcher Logic
+    window.switchUsersTab = function(tab) {
+        window.adminUsersTabFilter = tab;
+        
+        const tabAll = document.getElementById('tabAllUsers');
+        const tabActive = document.getElementById('tabActiveUsers');
+        
+        if (tab === 'All') {
+            tabAll.style.background = '#ffffff';
+            tabAll.style.color = '#3b82f6';
+            tabAll.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.05)';
+            tabAll.innerText = 'Total Users';
+            
+            tabActive.style.background = 'transparent';
+            tabActive.style.color = '#64748b';
+            tabActive.style.boxShadow = 'none';
+            tabActive.innerText = 'Active Accounts';
+        } else {
+            tabActive.style.background = '#ffffff';
+            tabActive.style.color = '#10b981';
+            tabActive.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.05)';
+            tabActive.innerText = 'Active Accounts';
+            
+            tabAll.style.background = 'transparent';
+            tabAll.style.color = '#64748b';
+            tabAll.style.boxShadow = 'none';
+            tabAll.innerText = 'Total Users';
+        }
+        
+        if (window.adminUsersData) {
+            renderAdminUsersList();
+        }
+    };
+
+    // 🚀 Secure Data Fetcher
+    async function fetchAdminUsersList() {
+        const loader = document.getElementById('usersLoadingIndicator');
+        try {
+            let res = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ 
+                    action: 'getAllUsersList',
+                    adminToken: sessionStorage.getItem('buildMoneyAdminToken') 
+                })
+            });
+            let result = await res.json();
+            loader.style.display = 'none';
+
+            if (result.status === "success") {
+                let reqData = result.data;
+                // Auto-Sort: Newest users on top
+                reqData.sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate));
+                window.adminUsersData = reqData; 
+                renderAdminUsersList();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            loader.innerHTML = `<p style="color: #e11d48;">Error: ${error.message}</p><button class="btn-view-details" onclick="fetchAdminUsersList()">Retry</button>`;
+        }
+    }
+
+    // 🚀 Premium Card List DOM Renderer
+    window.renderAdminUsersList = function() {
+        const listContainer = document.getElementById('adminUsersListContainer');
+        if(!window.adminUsersData) return;
+
+        // Apply Tab Filter dynamically
+        let filteredData = window.adminUsersData;
+        if (window.adminUsersTabFilter === 'Active') {
+            filteredData = window.adminUsersData.filter(user => user.status === 'Active');
+        }
+
+        if (filteredData.length === 0) {
+            listContainer.innerHTML = `
+                <div style="background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 30px 20px; text-align: center; animation: fadeIn 0.2s ease-in-out;">
+                    <span class="material-symbols-rounded" style="font-size: 40px; color: #94a3b8; margin-bottom: 10px;">search_off</span>
+                    <p style="font-size: 14px; font-weight: 800; color: #475569; margin: 0;">No ${window.adminUsersTabFilter} Users Found</p>
+                </div>`;
+            return;
+        }
+
+        listContainer.innerHTML = filteredData.map((user) => {
+            // Failsafe Date Parsing
+            let displayDate = user.joinDate;
+            try {
+                const dateObj = new Date(user.joinDate);
+                if (!isNaN(dateObj.getTime())) {
+                    displayDate = dateObj.toLocaleString('en-IN', {
+                        day: '2-digit', month: 'short', year: 'numeric'
+                    });
+                }
+            } catch(e) {}
+
+            let badgeHtml = user.status === 'Active' 
+                ? `<span style="background: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; letter-spacing: 0.5px;"><span class="material-symbols-rounded" style="font-size: 13px;">verified</span> ACTIVE</span>`
+                : `<span style="background: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; letter-spacing: 0.5px;"><span class="material-symbols-rounded" style="font-size: 13px;">person_off</span> INACTIVE</span>`;
+
+            // Google Style: Dynamic Avatar Colors based on Name
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#f43f5e'];
+            const charCode = user.name ? user.name.charCodeAt(0) : 0;
+            const bgColor = colors[charCode % colors.length];
+            const firstLetter = user.name ? user.name.charAt(0).toUpperCase() : "U";
+
+            return `
+            <div style="background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; animation: fadeIn 0.2s ease-out;">
+                <div style="width: 48px; height: 48px; background: ${bgColor}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; flex-shrink: 0; box-shadow: 0 4px 10px ${bgColor}40;">
+                    ${firstLetter}
+                </div>
+                <div style="flex-grow: 1; overflow: hidden;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <h4 style="font-size: 15px; font-weight: 800; color: #0f172a; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;">${user.name}</h4>
+                        ${badgeHtml}
+                    </div>
+                    <p style="font-size: 12px; color: #64748b; margin: 0 0 6px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%;">${user.email}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 4px;">
+                        <span style="font-size: 11px; color: #94a3b8; font-weight: 600; display: flex; align-items: center; gap: 3px;">
+                            <span class="material-symbols-outlined" style="font-size: 13px;">calendar_today</span> Joined ${displayDate}
+                        </span>
+                        <span style="font-size: 14px; font-weight: 900; color: #1b6e35;">₹${user.wallet}</span>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    };
 
     // ==========================================
     // 🚀 ADMIN: SUBMIT REQUESTS LIST SCREEN
