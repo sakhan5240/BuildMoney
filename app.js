@@ -28,16 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 0. FIREBASE INITIALIZATION
     // ==========================================
-    // Yahan apni Firebase Project Settings se copy ki hui config paste karna
     const firebaseConfig = {
-    apiKey: "AIzaSyAUpAKZ2SrcjT8p1o05KUDf4cy3G2zZbg4",
-    authDomain: "buildmoney.firebaseapp.com",
-    databaseURL: "https://buildmoney-default-rtdb.asia-southeast1.firebasedatabase.app/", // 🚀 IIT EXPERT FIX: Exact Premium Asian Server RTDB Link Added
-    projectId: "buildmoney",
-    storageBucket: "buildmoney.firebasestorage.app",
-    messagingSenderId: "730117973114",
-    appId: "1:730117973114:web:4758db3026994b6baec7c3"
+        apiKey: "AIzaSyAOgfi4Rf_mXVGDp_-MtYie1rJ1Kgm5kjQ",
+        authDomain: "grow-you-future.firebaseapp.com",
+        databaseURL: "https://grow-you-future-default-rtdb.asia-southeast1.firebasedatabase.app/",
+        projectId: "grow-you-future",
+        storageBucket: "grow-you-future.firebasestorage.app",
+        messagingSenderId: "105468107396",
+        appId: "1:105468107396:web:bd72075ec134587260c0d1"
     };
+
 
     // Initialize Firebase
     if (!firebase.apps.length) {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // MASTER GOOGLE SCRIPT URL (Global Engine Scope)
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBDW1g-9LxNYCCdehqZiqz-BV_Wie04V4jwCn1YgPTpzkRdDsPJ7E2T7N1SwSDwzUCaQ/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzujlLyP5BInmW04UsAnWL58Ej7Fj3qS5bAnoEXrkc121cV03-OOGLGO9RAQpzYvsalrA/exec";
 
     // ==========================================
     // PREMIUM CUSTOM ALERT FUNCTION
@@ -71,7 +71,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 1. ROUTER ENGINE (Global Scope Loophole Fixed)
     // ==========================================
+
+    // 🚀 IIT EXPERT FIX: Define Master Admin Identity (Change this to your real Admin Email)
+    const MASTER_ADMIN_EMAIL = "growyourfutureofficial@gmail.com"; 
+
     window.navigateTo = function(screen, pushToHistory = true) {
+        
+        // 🚀 IIT EXPERT FIX: Hardcore Route Protection (Console Bypass Killer)
+        const adminRoutes = ['adminLogin', 'adminDashboard', 'adminDepositRequests', 'adminWithdrawRequests', 'adminSubmitRequests', 'adminUsersList', 'adminQueries', 'adminChat'];
+        
+        if (adminRoutes.includes(screen)) {
+            const user = firebase.auth().currentUser;
+            if (!user || user.email !== MASTER_ADMIN_EMAIL) {
+                showCustomAlert("Security Engine Blocked Access: Unauthorized Route.");
+                return; // 🛡️ Execution blocked instantly. No screen will load.
+            }
+        }
+
         if (pushToHistory) {
             history.pushState({ screen: screen }, '', '#' + screen);
         }
@@ -115,8 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 <div class="login-header-premium" style="margin-bottom: 20px; margin-top: 15px;">
                     <img src="./icon-512x512.png" alt="App Logo" class="premium-app-logo">
-                    <h1 class="premium-title">Build Money</h1>
-                    <p class="premium-subtitle">Your Ultimate Testing & Wallet Portal</p>
+                    <h1 class="premium-title">Grow Your Future</h1>
+                    <p class="premium-subtitle">Your Ultimate Earning & Growing Portal</p>
                 </div>
 
                 <!-- 🚀 IIT EXPERT FIX: Professional Trust Stats Grid -->
@@ -204,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         appContainer.innerHTML = `
             <div class="screen">
                 <h1 class="text-left">Create Account</h1>
-                <p class="subtitle text-left">Join Build Money</p>
+                <p class="subtitle text-left">Join GYF</p>
 
                 <form id="registerForm">
                     <div class="input-group text-left">
@@ -225,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="input-group text-left">
                         <label>Referral Code *</label>
-                        <input type="text" id="regReferral" placeholder="Referral code (required)" required>
+                        <input type="text" id="regReferral" placeholder="Referral code (required)" required style="text-transform: uppercase;">
                     </div>
                     <button type="submit" class="btn-primary" id="regBtn">Register</button>
                 </form>
@@ -233,6 +249,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="bottom-link text-center">Already have an account? <span class="text-green font-bold cursor-pointer" id="goToLogin">Login</span></p>
             </div>
         `;
+        
+        // 🚀 IIT EXPERT FIX: Auto-Extract & Lock Referral Code from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCodeFromUrl = urlParams.get('ref');
+        if (refCodeFromUrl) {
+            const refInput = document.getElementById('regReferral');
+            refInput.value = refCodeFromUrl.toUpperCase();
+            refInput.readOnly = true; 
+            refInput.style.backgroundColor = "#e2e8f0"; // Premium locked UI feel
+            refInput.style.color = "#1b6e35";
+            refInput.style.fontWeight = "900";
+        }
         
         document.getElementById('goToLogin').addEventListener('click', () => navigateTo('login'));
 
@@ -243,8 +271,9 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value.trim(); // 🚀 IIT EXPERT FIX: Extract Phone
             const password = document.getElementById('regPassword').value;
-            const inputReferral = document.getElementById('regReferral').value.trim(); // Trim extra spaces
+            const inputReferral = document.getElementById('regReferral').value.trim(); 
             const btn = document.getElementById('regBtn');
 
             if (GOOGLE_SCRIPT_URL === "AAPKI_GOOGLE_SCRIPT_WEB_APP_URL") {
@@ -287,8 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         action: 'registerUser',
                         name: name,
                         email: email,
+                        phone: phone, // 🚀 Send Mobile Number to backend
                         uid: secureUid,
-                        appliedReferral: inputReferral // 🚀 Sending Code to Backend securely
+                        appliedReferral: inputReferral 
                     })
                 });
                 let saveData = await saveResponse.json();
@@ -540,11 +570,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const userName = document.getElementById('userNameDisplay');
 
         try {
+            // 🛡️ IIT EXPERT ENGINE: Extract UID securely from active session
+            const activeUser = firebase.auth().currentUser;
+            const secureUid = activeUser ? activeUser.uid : "GHOST_USER";
+
             let response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify({ action: 'getUserProfile', email: email })
+                headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+                body: JSON.stringify({ action: 'getUserProfile', email: email, uid: secureUid })
             });
-            let result = await response.json();
+            
+            // 🛡️ IIT EXPERT ENGINE: Failsafe Text Parsing (Prevents HTML Redirect Death)
+            let textRes = await response.text();
+            let result;
+            try {
+                result = JSON.parse(textRes);
+            } catch (jsonErr) {
+                throw new Error("Server communication broken. Received invalid data.");
+            }
 
             if (result.status === "success") {
                 userName.innerText = result.name;
@@ -649,11 +692,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     claimBtn.innerHTML = "Processing...";
 
                     try {
+                        // Secure UID Extraction from background session
+                        const activeUser = firebase.auth().currentUser;
+                        const secureUid = activeUser ? activeUser.uid : "GHOST_USER";
+
                         let claimRes = await fetch(GOOGLE_SCRIPT_URL, {
                             method: 'POST',
-                            body: JSON.stringify({ action: 'claimDailyBonus', email: email }) 
+                            headers: { "Content-Type": "text/plain;charset=utf-8" },
+                            body: JSON.stringify({ action: 'claimDailyBonus', email: email, uid: secureUid }) 
                         });
-                        let claimData = await claimRes.json();
+                        let textRes = await claimRes.text();
+                        let claimData = JSON.parse(textRes);
 
                         if (claimData.status === "success" || claimData.status === "already_claimed") {
                             
@@ -707,14 +756,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function renderSubmitScreen() {
         appContainer.innerHTML = `
-            <div class="top-nav" style="background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 1000;">
+            <!-- 🚀 IIT EXPERT FIX: Removed inline sticky. Relies on Bulletproof CSS -->
+            <div class="top-nav" style="background: #ffffff; border-bottom: 1px solid #f1f5f9;">
                 <div class="nav-title" style="flex-grow: 1; text-align: center; font-size: 20px; font-weight: 800; color: #0f172a;">Submit Your Work</div>
             </div>
 
             <div class="screen" style="padding-bottom: 100px; background: #f8fafc; min-height: 100vh;">
                 
                 <div id="submitUploadSection" style="animation: fadeIn 0.3s ease-out;">
-                    <div style="background: linear-gradient(135deg, #1b6e35, #124d1a); padding: 18px; border-radius: 16px; margin-bottom: 20px; color: white; box-shadow: 0 8px 20px rgba(27, 110, 53, 0.2);">
+                    <div style="background: linear-gradient(135deg, #960803, #3B0402); padding: 18px; border-radius: 16px; margin-bottom: 20px; color: white; box-shadow: 0 8px 20px rgba(27, 110, 53, 0.2);">
                         <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 6px;"><span class="material-symbols-rounded" style="font-size: 18px;">info</span> Daily Rule</h4>
                         <p style="margin: 0; font-size: 13px; font-weight: 500; opacity: 0.9;">Only 1 submission allowed per day. Profit will automatically add to your wallet after approval.</p>
                     </div>
@@ -777,21 +827,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
         async function fetchSubmitHistory(email) {
             try {
-                let res = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'getUserProfile', email: email }) });
-                let data = await res.json();
+                // 🛡️ IIT EXPERT ENGINE: Extract Secure UID
+                const activeUser = firebase.auth().currentUser;
+                const secureUid = activeUser ? activeUser.uid : "GHOST_USER";
+
+                let res = await fetch(GOOGLE_SCRIPT_URL, { 
+                    method: 'POST', 
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // 🛡️ CORS Shield
+                    body: JSON.stringify({ action: 'getUserProfile', email: email, uid: secureUid }) 
+                });
+                
+                let textRes = await res.text();
+                let data = JSON.parse(textRes); // 🛡️ JSON Crash Failsafe
+                
                 document.getElementById('submitLoadingIndicator').style.display = 'none';
 
                 if (data.status === "success") {
+                    
+                    // 🚀 IIT EXPERT FIX: Explicit UI State Toggle Engine
+                    const uploadSec = document.getElementById('submitUploadSection');
+                    const submittedSec = document.getElementById('alreadySubmittedSection');
+                    
                     if (data.hasSubmittedToday) {
-                        document.getElementById('submitUploadSection').style.display = 'none';
-                        document.getElementById('alreadySubmittedSection').style.display = 'block';
+                        if(uploadSec) uploadSec.style.display = 'none';
+                        if(submittedSec) submittedSec.style.display = 'block';
+                    } else {
+                        if(uploadSec) uploadSec.style.display = 'block';
+                        if(submittedSec) submittedSec.style.display = 'none';
                     }
+
                     let sArr = data.submitHistory || [];
                     sArr.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
                     window.submitDataCache = sArr;
                     renderSubmitList();
+                } else {
+                    console.error("Submit History Blocked: ", data.message);
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.error("Failed to fetch submit history:", e);
+                document.getElementById('submitLoadingIndicator').innerHTML = `<p style="color:#e11d48; font-size:12px; font-weight: bold;">Network Sync Error</p>`;
+            }
         }
 
         window.switchSubmitTab = function(tab) {
@@ -857,9 +932,18 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 let res = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'submitWork', email: user.email, imageBase64: base64String, mimeType: mimeType, imageName: fileName })
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // 🛡️ CORS Fix
+                    body: JSON.stringify({ 
+                        action: 'submitWork', 
+                        email: user.email, 
+                        uid: user.uid, // 🛡️ Anti-CSRF Token
+                        imageBase64: base64String, 
+                        mimeType: mimeType, 
+                        imageName: fileName 
+                    })
                 });
-                let result = await res.json();
+                let textRes = await res.text();
+                let result = JSON.parse(textRes); // 🛡️ JSON Crash Failsafe
                 if (result.status === "success") {
                     showCustomAlert("Work Submitted! Profit will be added after admin review.");
                     submitBtn.innerHTML = "Locked";
@@ -886,7 +970,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="width: 24px;"></div>
             </div>
             
-            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1.5rem;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed conflicting inline 'padding-top: 1.5rem;' to respect global fixed CSS -->
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh;">
                 <div class="admin-header" style="margin-bottom: 25px;">
                     <h2 style="font-size: 26px; color: #0f172a; margin-bottom: 4px;">Dashboard</h2>
                     <p style="font-size: 14px; color: #64748b;">Overview & Platform Management</p>
@@ -962,7 +1047,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!window.adminUsersTabFilter) window.adminUsersTabFilter = 'All';
 
         appContainer.innerHTML = `
-            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed inline sticky -->
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0;">
                 <button class="back-btn" id="goBackAdminUsers">
                     <span class="material-symbols-outlined">arrow_back</span>
                 </button>
@@ -970,7 +1056,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="width: 24px;"></div>
             </div>
             
-            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1rem;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed conflicting padding -->
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh;">
                 
                 <!-- 🚀 Dual-Tab Segmented Controller -->
                 <div style="display: flex; gap: 10px; margin-bottom: 20px; padding: 0 4px; background: #e2e8f0; border-radius: 16px; padding: 6px;">
@@ -1101,11 +1188,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? `<span style="background: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; letter-spacing: 0.5px;"><span class="material-symbols-rounded" style="font-size: 13px;">verified</span> ACTIVE</span>`
                 : `<span style="background: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; letter-spacing: 0.5px;"><span class="material-symbols-rounded" style="font-size: 13px;">person_off</span> INACTIVE</span>`;
 
-            // Google Style: Dynamic Avatar Colors based on Name
+            // 🛡️ IIT EXPERT XSS ENGINE: Strict Output Escaping
+            const safeName = String(user.name || "Unknown User").replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+            const safeEmail = String(user.email || "No Email").replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+            const safePhone = String(user.phone || "Not Provided").replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+
+            // Google Style: Dynamic Avatar Colors based on Name (Now Hacker-Proof)
             const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#f43f5e'];
-            const charCode = user.name ? user.name.charCodeAt(0) : 0;
+            const charCode = safeName.charCodeAt(0) || 0;
             const bgColor = colors[charCode % colors.length];
-            const firstLetter = user.name ? user.name.charAt(0).toUpperCase() : "U";
+            const firstLetter = safeName.charAt(0).toUpperCase();
 
             return `
             <div style="background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; animation: fadeIn 0.2s ease-out;">
@@ -1113,11 +1205,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${firstLetter}
                 </div>
                 <div style="flex-grow: 1; overflow: hidden;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <h4 style="font-size: 15px; font-weight: 800; color: #0f172a; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;">${user.name}</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="font-size: 15px; font-weight: 800; color: #0f172a; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;">${safeName}</h4>
                         ${badgeHtml}
                     </div>
-                    <p style="font-size: 12px; color: #64748b; margin: 0 0 6px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%;">${user.email}</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #f1f5f9;">
+                        <p style="font-size: 12px; color: #475569; margin: 0; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px; color: #10b981;">call</span> +91 ${safePhone}
+                        </p>
+                        <p style="font-size: 12px; color: #475569; margin: 0; font-weight: 600; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <span class="material-symbols-outlined" style="font-size: 14px; color: #3b82f6;">mail</span> ${safeEmail}
+                        </p>
+                    </div>
+
                     <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 4px;">
                         <span style="font-size: 11px; color: #94a3b8; font-weight: 600; display: flex; align-items: center; gap: 3px;">
                             <span class="material-symbols-outlined" style="font-size: 13px;">calendar_today</span> Joined ${displayDate}
@@ -1134,12 +1235,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function renderAdminSubmitRequestsScreen() {
         appContainer.innerHTML = `
-            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed inline sticky -->
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0;">
                 <button class="back-btn" onclick="navigateTo('adminDashboard')"><span class="material-symbols-outlined">arrow_back</span></button>
                 <div class="nav-title" style="font-size: 18px; flex-grow: 1; text-align: left; font-weight: 800;">Pending Submits</div>
                 <div style="width: 24px;"></div>
             </div>
-            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1rem;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed conflicting padding -->
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh;">
                 <div id="subLoadingIndicator" class="text-center" style="color: #64748b; margin-top: 40px;">
                     <span class="material-symbols-outlined" style="animation: spin 1s linear infinite; font-size: 36px; color: #10b981;">refresh</span>
                     <p style="margin-top: 10px; font-weight: 500;">Fetching secure tasks...</p>
@@ -1251,27 +1354,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function renderTeamScreen() {
         appContainer.innerHTML = `
-            <div class="top-nav" style="background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 1000;">
-                <div class="nav-title" style="flex-grow: 1; text-align: center; font-size: 20px; font-weight: 800; color: #0f172a;">Team Work</div>
+            <!-- 🚀 IIT EXPERT FIX: Removed inline sticky. Relies on Bulletproof CSS -->
+            <div class="top-nav" style="background: #ffffff; border-bottom: 1px solid #f1f5f9;">
+                <div class="nav-title" style="flex-grow: 1; text-align: center; font-size: 20px; font-weight: 800; color: #0f172a;">Refer & Earn Bonus</div>
             </div>
 
-            <div class="screen" style="background: #f8fafc; min-height: 100vh; padding-top: 20px; padding-bottom: 100px;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed conflicting inline top-padding to respect global CSS -->
+            <div class="screen" style="background: #f8fafc; min-height: 100vh; padding-bottom: 100px;">
                 
                 <!-- 🚀 Professional Sharing Card -->
                 <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 20px; padding: 25px 20px; color: white; text-align: center; margin-bottom: 30px;">
                     <p style="font-size: 13px; color: #94a3b8; font-weight: 600; margin-bottom: 8px;">Your Unique Referral Code</p>
                     <h2 id="myRefCodeDisplay" style="font-size: 36px; font-weight: 900; letter-spacing: 3px; margin: 0 0 20px 0; color: #10b981;">------</h2>
                     
-                    <div style="display: flex; gap: 15px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 16px; justify-content: center; margin-bottom: 20px;">
-                        <div style="text-align: center; flex: 1;">
-                            <p style="margin: 0; font-size: 20px; font-weight: 800;" id="activeDirectCount">-</p>
-                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">Direct Active</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 2px 10px rgba(255,255,255,0.02);">
+                            <p style="margin: 0; font-size: 24px; font-weight: 900; color: #ffffff;" id="totalDirectCount">-</p>
+                            <p style="margin: 0 0 6px 0; font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Directs</p>
+                            <div style="display: inline-block; background: rgba(16, 185, 129, 0.15); padding: 4px 10px; border-radius: 12px;">
+                                <p style="margin: 0; font-size: 10px; color: #34d399; font-weight: 800;" id="activeDirectCount">- Active</p>
+                            </div>
                         </div>
-                        <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
-                        <div style="text-align: center; flex: 1;">
-                            <p style="margin: 0; font-size: 20px; font-weight: 800; color: #10b981;" id="activeTotalCount">-</p>
-                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">Total Active Team</p>
+                        <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 2px 10px rgba(255,255,255,0.02);">
+                            <p style="margin: 0; font-size: 24px; font-weight: 900; color: #ffffff;" id="totalTeamCount">-</p>
+                            <p style="margin: 0 0 6px 0; font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Team</p>
+                            <div style="display: inline-block; background: rgba(16, 185, 129, 0.15); padding: 4px 10px; border-radius: 12px;">
+                                <p style="margin: 0; font-size: 10px; color: #34d399; font-weight: 800;" id="activeTotalCount">- Active</p>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- 🚀 IIT EXPERT: 10% Mutual Bonus Notification Banner -->
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px dashed rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; text-align: left;">
+                        <div style="background: #10b981; color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 900; font-size: 14px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);">10%</div>
+                        <p style="margin: 0; font-size: 12px; color: #cbd5e1; font-weight: 500; line-height: 1.4;"><strong style="color: #34d399;">Mutual Cash Bonus:</strong> When your friend joins and activates a plan, <strong style="color: #ffffff;">BOTH of you</strong> instantly get a 10% cash bonus!</p>
                     </div>
 
                     <!-- Native Share Button -->
@@ -1295,17 +1411,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         async function fetchTeamData(email) {
             try {
+                // 🛡️ IIT EXPERT ENGINE: Secure background UID extraction
+                const activeUser = firebase.auth().currentUser;
+                const secureUid = activeUser ? activeUser.uid : "GHOST_USER";
+
                 let res = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ action: 'getTeamStats', email: email })
+                    body: JSON.stringify({ action: 'getTeamStats', email: email, uid: secureUid })
                 });
-                let data = await res.json();
+                
+                // 🛡️ IIT EXPERT ENGINE: Failsafe Text Parsing (Prevents HTML Redirect Death)
+                let textRes = await res.text();
+                let data = JSON.parse(textRes);
 
                 if (data.status === "success") {
                     document.getElementById('myRefCodeDisplay').innerText = data.myReferralCode || "ERROR";
-                    document.getElementById('activeDirectCount').innerText = data.activeDirect;
-                    document.getElementById('activeTotalCount').innerText = data.activeTotal;
+                    
+                    // 🚀 IIT EXPERT FIX: Bind new data points to UI
+                    document.getElementById('totalDirectCount').innerText = data.totalDirect;
+                    document.getElementById('activeDirectCount').innerText = data.activeDirect + " Active";
+                    document.getElementById('totalTeamCount').innerText = data.totalTeam;
+                    document.getElementById('activeTotalCount').innerText = data.activeTotal + " Active";
 
                     renderRewardCards(data.activeDirect, data.activeTotal, data.rewardLevel);
                 }
@@ -1396,12 +1523,16 @@ document.addEventListener('DOMContentLoaded', () => {
         window.shareMyReferral = function() {
             const code = document.getElementById('myRefCodeDisplay').innerText;
             if (code === "------" || code === "ERROR") return showCustomAlert("Code loading...");
-            const shareText = `Hey! Join Build Money and start earning daily. Use my Referral Code: *${code}* during registration.`;
+            const refLink = `${window.location.origin}${window.location.pathname}?ref=${code}#register`;
+            
+            // 🚀 IIT EXPERT: Updated Share Text to maximize 10% Mutual Bonus Conversion
+            const shareText = `Hey! Join GYF using my link. Activate your account and we BOTH get a 10% instant cash bonus! Click here to register:`;
+            
             if (navigator.share) {
-                navigator.share({ title: 'Join Build Money', text: shareText, url: window.location.origin }).catch(console.error);
+                navigator.share({ title: 'Join GYF', text: shareText, url: refLink }).catch(console.error);
             } else {
-                navigator.clipboard.writeText(`${shareText} ${window.location.origin}`);
-                showCustomAlert("Referral Text & Link Copied to Clipboard!");
+                navigator.clipboard.writeText(`${shareText} \n${refLink}`);
+                showCustomAlert("Premium Referral Link Copied to Clipboard!");
             }
         }
     }
@@ -1411,14 +1542,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function renderWalletScreen() {
         appContainer.innerHTML = `
-            <div class="top-nav" style="background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; z-index: 1000;">
+            <div class="top-nav" style="background: #ffffff; border-bottom: 1px solid #f1f5f9;">
                 <div class="nav-title" style="flex-grow: 1; text-align: center; font-size: 20px; font-weight: 800; color: #0f172a;">Wallet & History</div>
             </div>
 
-            <div class="screen" style="background: #f8fafc; min-height: 100vh; padding-top: 20px; padding-bottom: 100px;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Wallet UI Overlap Fix -->
+            <div class="screen" style="background: #f8fafc; min-height: 100vh; padding-bottom: 100px;">
                 
                 <!-- Premium Wallet Balance Card (Animated) -->
-                <div style="background: linear-gradient(135deg, #1b6e35 0%, #124d1a 100%); border-radius: 20px; padding: 25px 20px; color: white; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(27, 110, 53, 0.25); position: relative; overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #7D0802 0%, #3B0402 100%); border-radius: 20px; padding: 25px 20px; color: white; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(27, 110, 53, 0.25); position: relative; overflow: hidden;">
                     <!-- Hardware Accelerated Shine Effect -->
                     <div style="position: absolute; top: 0; left: -150%; width: 60%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: premiumShine 4s infinite;"></div>
                     
@@ -1428,7 +1560,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="material-symbols-rounded" id="walletEyeIcon" style="font-size: 18px;">visibility_off</span>
                         </button>
                     </div>
-                    <h2 id="mainWalletBalance" data-balance="0" style="font-size: 40px; font-weight: 900; margin: 0; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; z-index: 1;">₹••••••</h2>
+                    <h2 id="mainWalletBalance" data-balance="0" style="font-size: 40px; color: white; font-weight: 900; margin: 0; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; z-index: 1;">₹••••••</h2>
                 </div>
 
                 <!-- 🚀 Dual-Tab Segmented Controller -->
@@ -1472,11 +1604,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         async function fetchWalletHistory(email) {
             try {
+                // 🛡️ IIT EXPERT ENGINE: Extract Secure UID
+                const activeUser = firebase.auth().currentUser;
+                const secureUid = activeUser ? activeUser.uid : "GHOST_USER";
+
                 let res = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'getUserProfile', email: email })
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // 🛡️ CORS Shield
+                    body: JSON.stringify({ 
+                        action: 'getUserProfile', 
+                        email: email, 
+                        uid: secureUid // 🛡️ Anti-CSRF Token for backend verification
+                    })
                 });
-                let data = await res.json();
+                
+                let textRes = await res.text();
+                let data = JSON.parse(textRes); // 🛡️ JSON Crash Failsafe
                 
                 document.getElementById('walletLoadingIndicator').style.display = 'none';
 
@@ -1499,8 +1642,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Instantly render default tab
                     renderWalletList();
+                } else {
+                    console.error("Wallet History Blocked: ", data.message);
+                    document.getElementById('walletLoadingIndicator').innerHTML = `<p style="color:#e11d48; font-size:13px; font-weight: bold;">Security Block: ${data.message}</p>`;
                 }
             } catch(e) {
+                console.error("Failed to fetch wallet history:", e);
                 document.getElementById('walletLoadingIndicator').innerHTML = `<p style="color:#e11d48; font-size:13px; font-weight: bold;">Network Connection Weak. Please Refresh.</p>`;
             }
         }
@@ -1624,7 +1771,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="font-size: 11px; color: #a7f3d0; margin-top: 3px;">Online • Usually replies instantly</span>
                     </div>
                 </div>
-                <span class="material-symbols-rounded" id="goToAdminBtn" style="font-size: 24px; color: rgba(255,255,255,0.7); cursor: pointer;">settings</span>
+                <!-- 🚀 IIT EXPERT FIX: Dynamic Settings Button Injection Container -->
+                <div id="adminSettingsBtnContainer"></div>
             </div>
             
             <div class="screen" id="chatArea" style="background: #e2e8f0; min-height: 100vh; padding: 80px 15px 160px 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;">
@@ -1646,7 +1794,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ${getBottomNavHTML('support')}
         `;
 
-        document.getElementById('goToAdminBtn').addEventListener('click', () => navigateTo('adminLogin'));
+        // 🚀 IIT EXPERT FIX: Only Render and Activate the Button if User is the Master Admin
+        if (userEmail === MASTER_ADMIN_EMAIL) {
+            document.getElementById('adminSettingsBtnContainer').innerHTML = `<span class="material-symbols-rounded" id="goToAdminBtn" style="font-size: 24px; color: rgba(255,255,255,0.7); cursor: pointer;">settings</span>`;
+            document.getElementById('goToAdminBtn').addEventListener('click', () => navigateTo('adminLogin'));
+        }
 
         const msgContainer = document.getElementById('messagesContainer');
         const chatArea = document.getElementById('chatArea');
@@ -1723,13 +1875,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function renderAdminQueriesScreen() {
         appContainer.innerHTML = `
-            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed inline sticky. Relies strictly on global CSS -->
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0;">
                 <button class="back-btn" onclick="navigateTo('adminDashboard')">
                     <span class="material-symbols-outlined">arrow_back</span>
                 </button>
                 <div class="nav-title" style="font-size: 18px; flex-grow: 1; text-align: left; font-weight: 800;">User Queries</div>
             </div>
-            <div class="screen" style="background-color: #ffffff; min-height: 100vh; padding: 0;">
+            
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed fatal inline 'padding: 0;' -->
+            <div class="screen" style="background-color: #ffffff; min-height: 100vh;">
                 <div id="contactGridList" style="display: flex; flex-direction: column;">
                     <div class="text-center" style="padding: 40px; color: #1b6e35;"><span class="material-symbols-rounded" style="animation: spin 1s linear infinite; font-size: 32px;">sync</span></div>
                 </div>
@@ -2213,9 +2368,11 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 let res = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({
                         action: 'depositRequest',
                         email: user.email,
+                        uid: user.uid, // 🛡️ Anti-CSRF Token
                         planName: selectedPlan,
                         price: selectedPrice,
                         transactionId: txnVal,
@@ -2224,7 +2381,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         imageName: fileName
                     })
                 });
-                let result = await res.json();
+                let textRes = await res.text();
+                let result = JSON.parse(textRes);
 
                 if (result.status === "success") {
                     showCustomAlert("Deposit Request Submitted Successfully!");
@@ -2267,7 +2425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="screen" style="padding-bottom: 100px;">
                 
                 <!-- Premium Wallet Balance Card -->
-                <div style="background: linear-gradient(135deg, #1b6e35 0%, #124d1a 100%); border-radius: 16px; padding: 20px; color: white; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(27, 110, 53, 0.25);">
+                <div style="background: linear-gradient(135deg, #7D0802 0%, #3B0402 100%); border-radius: 16px; padding: 20px; color: white; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(27, 110, 53, 0.25);">
                     <p style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Available Balance</p>
                     <h2 id="withdrawWalletBalance" style="font-size: 32px; font-weight: 800; margin: 0; color: white;">Loading...</h2>
                     <p id="realtimeDeductionHint" style="font-size: 12px; color: #c4eed0; margin-top: 8px; font-weight: 600; display: none; transition: all 0.3s ease;">Remaining Balance: ₹0.00</p>
@@ -2316,18 +2474,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fetch Live Secure Balance
         const user = firebase.auth().currentUser;
+        let isUserActive = false; // 🚀 IIT EXPERT FIX: Client-side flag tracker
+
         if(user) {
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify({ action: 'getUserProfile', email: user.email })
+                headers: { "Content-Type": "text/plain;charset=utf-8" }, // 🛡️ IIT EXPERT FIX: CORS Preflight Shield
+                body: JSON.stringify({ 
+                    action: 'getUserProfile', 
+                    email: user.email,
+                    uid: user.uid // 🛡️ IIT EXPERT FIX: Anti-CSRF Token attached for backend authorization
+                })
             })
-            .then(res => res.json())
-            .then(data => {
+            .then(res => res.text()) // 🛡️ IIT EXPERT FIX: Failsafe text parsing to prevent JSON crash
+            .then(textRes => {
+                let data = JSON.parse(textRes);
                 if(data.status === "success") {
                     currentBal = data.walletBalance;
                     balDisplay.innerText = `₹${currentBal}.00`;
+                    isUserActive = (data.accountStatus === "Active"); 
+                    
+                    if (!isUserActive) {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        btn.style.background = '#94a3b8';
+                        btn.innerText = "Account Inactive";
+                        document.getElementById('withdrawAmt').disabled = true;
+                        showCustomAlert("Withdrawals are only allowed for Active Accounts. Please Deposit and Activate your plan first.");
+                    }
                 } else {
                     balDisplay.innerText = "Error";
+                    console.error("Backend Rejected Request:", data.message);
                 }
             })
             .catch(() => balDisplay.innerText = "Network Error");
@@ -2372,6 +2549,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const ifsc = document.getElementById('ifscCode').value.trim().toUpperCase();
 
             // Client Side Double Check
+            if (!isUserActive) { // 🚀 Double lock before sending API request
+                showCustomAlert("Security Block: Your account is currently Inactive.");
+                return;
+            }
             if (amt <= 0 || amt > currentBal) {
                 showCustomAlert("Invalid Amount or Insufficient Wallet Balance!");
                 return;
@@ -2390,7 +2571,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({
                         action: 'withdrawRequest',
-                        email: user.email, // Securely checks Auth Context
+                        email: user.email,
+                        uid: user.uid, // 🛡️ IIT EXPERT ENGINE: Anti-CSRF Authentication Token Attached
                         amount: amt,
                         bankName: bank,
                         accNo: acc1,
@@ -2496,92 +2678,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showCustomAlert("Access Denied: " + error.message);
             }
         });
-    }
-
-
-
-
-    // ==========================================
-    // ADMIN MULTICOLOR GRID DASHBOARD
-    // ==========================================
-    function renderAdminDashboardScreen() {
-        appContainer.innerHTML = `
-            <div class="top-nav" style="background-color: #0f172a; border-bottom: none;">
-                <button class="back-btn" id="adminLogoutBtn" style="color: #ffffff;">
-                    <span class="material-symbols-outlined">logout</span>
-                </button>
-                <div class="nav-title text-center" style="font-size: 20px; color: #ffffff;">Admin Engine</div>
-                <div style="width: 24px;"></div> <!-- Center Alignment Spacer -->
-            </div>
-            
-            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1.5rem;">
-                <div class="admin-header" style="margin-bottom: 25px;">
-                    <h2 style="font-size: 26px; color: #0f172a; margin-bottom: 4px;">Dashboard</h2>
-                    <p style="font-size: 14px; color: #64748b;">Overview & Platform Management</p>
-                </div>
-                
-                <!-- 🚀 IIT EXPERT FIX: Premium Live UPI Management Card -->
-                <div style="background: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <p style="font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Current Live UPI ID</p>
-                        <h3 id="adminCurrentUpi" style="font-size: 16px; font-weight: 800; color: #1b6e35; margin: 0;">Loading...</h3>
-                    </div>
-                    <button onclick="openUpiUpdateModal()" style="background: #eff6ff; color: #2563eb; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; transition: transform 0.15s ease, background 0.15s ease;" onmousedown="this.style.transform='scale(0.92)'" onmouseup="this.style.transform='scale(1)'">
-                        Change
-                    </button>
-                </div>
-                
-                <div class="admin-grid">
-                    <!-- Deposit Request (Priority - Full Width) -->
-                    <div class="admin-card card-deposit" onclick="navigateTo('adminDepositRequests')">
-                        <span class="material-symbols-rounded">payments</span>
-                        <h4>Deposit Request</h4>
-                        <div class="glass-badge">Live</div>
-                    </div>
-
-                    <!-- Total Accounts Activated -->
-                    <div class="admin-card card-submit" style="cursor: default;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <span class="material-symbols-rounded">verified_user</span>
-                            <h2 id="liveActiveCount" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1; color: white;">-</h2>
-                        </div>
-                        <h4 style="margin-top: 15px;">Active Accounts</h4>
-                    </div>
-                    
-                    <!-- Total New Users -->
-                    <div class="admin-card card-accounts" style="cursor: default;">
-                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <span class="material-symbols-rounded">group_add</span>
-                            <h2 id="liveUsersCount" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1; color: white;">-</h2>
-                        </div>
-                        <h4 style="margin-top: 15px;">Total Users</h4>
-                    </div>  
-                    
-                    <!-- 🚀 IIT EXPERT FIX: Withdraw Request Navigation -->
-                    <div class="admin-card card-withdraw" onclick="navigateTo('adminWithdrawRequests')">
-                        <span class="material-symbols-rounded">account_balance</span>
-                        <h4>Withdraw Request</h4>
-                        <div class="glass-badge">Live</div>
-                    </div>
-                    
-                    <!-- 🚀 IIT EXPERT: Live Queries Chat Engine -->
-                    <div class="admin-card card-queries" onclick="navigateTo('adminQueries')">
-                        <span class="material-symbols-rounded">forum</span>
-                        <h4>Queries</h4>
-                        <div class="glass-badge">Live Chat</div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // 🚀 Loophole-Free Logout: Sends admin back to the user-side dashboard
-        document.getElementById('adminLogoutBtn').addEventListener('click', () => {
-            navigateTo('dashboard', false); 
-        });
-
-        // 🚀 IIT EXPERT FIX: Trigger Live Stats fetch on load
-        fetchAdminDashboardStats();
-        fetchAdminLiveUpi(); // 🚀 NEW: Load UPI instantly on Admin Dashboard
     }
 
     // ==========================================
@@ -2731,7 +2827,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function renderAdminDepositRequestsScreen() {
         appContainer.innerHTML = `
-            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0;">
                 <button class="back-btn" id="goBackAdminDeposit">
                     <span class="material-symbols-outlined">arrow_back</span>
                 </button>
@@ -2739,7 +2835,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="width: 24px;"></div>
             </div>
             
-            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1rem;">
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh;">
                 <div id="loadingIndicator" class="text-center" style="color: #64748b; margin-top: 40px;">
                     <span class="material-symbols-outlined" style="animation: spin 1s linear infinite; font-size: 36px; color: #3b82f6;">refresh</span>
                     <p style="margin-top: 10px; font-weight: 500;">Fetching secure requests...</p>
@@ -2897,7 +2993,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function renderAdminWithdrawRequestsScreen() {
         appContainer.innerHTML = `
-            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed inline sticky -->
+            <div class="top-nav" style="background-color: #ffffff; border-bottom: 1px solid #f0f0f0;">
                 <button class="back-btn" id="goBackAdminWithdraw">
                     <span class="material-symbols-outlined">arrow_back</span>
                 </button>
@@ -2905,7 +3002,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="width: 24px;"></div>
             </div>
             
-            <div class="screen" style="background-color: #f8fafc; min-height: 100vh; padding-top: 1rem;">
+            <!-- 🛡️ IIT EXPERT ENGINE: Removed conflicting padding -->
+            <div class="screen" style="background-color: #f8fafc; min-height: 100vh;">
                 
                 <!-- 🚀 Dual-Tab Segmented Controller -->
                 <div style="display: flex; gap: 10px; margin-bottom: 20px; padding: 0 4px;">
@@ -3157,15 +3255,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🚀 2. STRICT MODE: Force Native App Installation (Browser Bypass Killer)
-    // CSS level pe detect karta hai ki app PWA mode mein khula hai ya Browser URL mein
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://');
 
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://');
+    
+    // 🛡️ IIT EXPERT ENGINE: Strict Mandatory Install Wall Activated (Developer Bypass Removed)
     if (!isStandalone) {
-        // Step A: Hide the actual app entirely from browser users
         document.getElementById('app-container').style.display = 'none';
-        
-        // Step B: Render Premium Non-Closeable Full Screen UI
         const installWall = document.createElement('div');
         installWall.innerHTML = `
             <div style="position: fixed; top:0; left:0; width: 100%; height: 100vh; background: #f8fafc; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 25px; text-align: center;">
@@ -3175,7 +3270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="./icon-512x512.png" style="width: 100%; height: 100%; border-radius: 22px; object-fit: cover;">
                 </div>
                 
-                <h2 style="font-size: 28px; font-weight: 900; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.5px;">Build Money</h2>
+                <h2 style="font-size: 28px; font-weight: 900; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.5px;">Grow Your Future</h2>
                 <p style="font-size: 15px; color: #64748b; font-weight: 600; margin-bottom: 40px; max-width: 300px; line-height: 1.5;">To ensure a 100% secure and premium experience, please install our native app to continue.</p>
 
                 <!-- Action Button -->
@@ -3230,7 +3325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('appinstalled', () => {
             btn.innerHTML = `<span class="material-symbols-rounded">done_all</span> Installed Successfully!`;
             btn.style.background = "#1b6e35";
-            showCustomAlert("App Installed Successfully! Please close this browser tab and open 'Build Money' App from your phone's home screen.");
+            showCustomAlert("App Installed Successfully! Please close this browser tab and open 'Grow Your Future' App from your phone's home screen.");
         });
     }
 
